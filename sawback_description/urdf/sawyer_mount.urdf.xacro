@@ -28,5 +28,5 @@
     <origin rpy="0 0 0" xyz="0.19 0.0 0.280"/>
     <parent link="base_link"/>
     <child link="mount_link"/>
-  </joint>
+  </joint>  
 </robot>

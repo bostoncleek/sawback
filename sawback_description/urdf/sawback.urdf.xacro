@@ -1,7 +1,26 @@
 <?xml version="1.0" ?>
 <robot name="sawback" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="gazebo" default="false"/>
+  <xacro:arg name="electric_gripper" default="true"/>
+  <xacro:arg name="pedestal" default="false"/>
+  <xacro:arg name="static" default="false"/>
 
+  <!-- Ridgeback -->
+  <xacro:include filename="$(find nuridgeback_description)/urdf/nuridgeback.urdf.xacro"/>
+  <xacro:include filename="$(find sawback_description)/urdf/sawyer_mount.urdf.xacro"/>
 
+  <!-- Sawyer -->
+  <xacro:include filename="$(find sawyer_description)/urdf/sawyer.urdf.xacro">
+    <xacro:arg name="gazebo" value="${gazebo}"/>
+    <xacro:arg name="pedestal" value="${pedestal}"/>
+    <xacro:arg name="static" value="${static}"/>
+    <xacro:arg name="electric_gripper" value="${electric_gripper}"/>
+  </xacro:include>
 
-
+  <!-- joint between ridgeback and sawyer robots -->
+  <joint name="sawyer_base_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.0099"/>
+    <parent link="mount_link"/>
+    <child link="base"/>
+  </joint>
 </robot>
