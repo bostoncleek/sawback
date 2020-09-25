@@ -9,12 +9,15 @@
 #include <iostream>
 #include <memory>
 
-// ROS 
+// ROS
 #include <ros/ros.h>
 #include <moveit/moveit_cpp/moveit_cpp.h>
 #include <moveit/moveit_cpp/planning_component.h>
 #include <geometry_msgs/PointStamped.h>
+#include <moveit_visual_tools/moveit_visual_tools.h>
 
+
+namespace rvt = rviz_visual_tools;
 
 int main(int argc, char** argv)
 {
@@ -40,6 +43,18 @@ int main(int argc, char** argv)
   auto robot_start_state = planning_components->getStartState();
   auto joint_model_group_ptr = robot_model_ptr->getJointModelGroup(PLANNING_GROUP);
 
+
+  moveit_visual_tools::MoveItVisualTools visual_tools("base", rvt::RVIZ_MARKER_TOPIC,
+                                                      moveit_cpp_ptr->getPlanningSceneMonitor());
+  visual_tools.deleteAllMarkers();
+  visual_tools.loadRemoteControl();
+
+  Eigen::Isometry3d text_pose = Eigen::Isometry3d::Identity();
+  text_pose.translation().z() = 1.75;
+  visual_tools.publishText(text_pose, "MoveItCpp Demo", rvt::WHITE, rvt::XLARGE);
+  visual_tools.trigger();
+
+
   planning_components->setStartStateToCurrentState();
 
   geometry_msgs::PoseStamped target_pose1;
@@ -55,11 +70,25 @@ int main(int argc, char** argv)
 
   if (plan_solution1)
   {
-   ROS_INFO_STREAM_NAMED(LOGNAME, "Motion plan found");
-   ROS_INFO_STREAM_NAMED(LOGNAME, "Press enter to continue");
-   std::cin.get();
-   planning_components->execute();
+    visual_tools.publishAxisLabeled(robot_start_state->getGlobalLinkTransform("right_hand"), "start_pose");
+    visual_tools.publishText(text_pose, "Start Pose", rvt::WHITE, rvt::XLARGE);
+    // Visualize the goal pose in Rviz
+    visual_tools.publishAxisLabeled(target_pose1.pose, "target_pose");
+    visual_tools.publishText(text_pose, "Goal Pose", rvt::WHITE, rvt::XLARGE);
+    // Visualize the trajectory in Rviz
+    visual_tools.publishTrajectoryLine(plan_solution1.trajectory, joint_model_group_ptr);
+    visual_tools.trigger();
+
+    ROS_INFO_STREAM_NAMED(LOGNAME, "Motion plan found");
+    ROS_INFO_STREAM_NAMED(LOGNAME, "Press enter to continue");
+
+    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
+
+    // std::cin.get();
+    planning_components->execute();
   }
+
+  visual_tools.deleteAllMarkers();
 
   ROS_INFO_STREAM_NAMED(LOGNAME, "Shutting down.");
   ros::waitForShutdown();
