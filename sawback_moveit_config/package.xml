@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>sawback_moveit_config</name>
+  <version>0.0.1</version>
+  <description>Sawback moveit config</description>
+  <maintainer email="bostoncleek2020@u.northwestern.edu">bostoncleek</maintainer>
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+</package>
