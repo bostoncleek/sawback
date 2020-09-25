@@ -1,7 +1,8 @@
 <launch>
-  
+  <arg name="fake_execution" default="false"/>
+
   <!-- Moveitcpp parmeters -->
-  <rosparam ns="sawback_moveitcpp" command="load" file="$(find sawback_moveit_config)/config/moveitcpp.yaml" />
+  <rosparam ns="sawback_moveitcpp" command="load" file="$(find sawback_moveit_config)/config/moveit_cpp.yaml" />
 
   <!-- Planning Pipeline -->
   <include ns="/sawback_moveitcpp/ompl"
@@ -9,7 +10,8 @@
 
   <!-- Trajectory execution  -->
   <include ns="sawback_moveitcpp" file="$(find sawback_moveit_config)/launch/trajectory_execution.launch.xml">
-    <arg name="moveit_controller_manager" value="fake"/>
+    <arg name="moveit_controller_manager" value="sawback" unless="$(arg fake_execution)"/>
+    <arg name="moveit_controller_manager" value="fake" if="$(arg fake_execution)"/>
   </include>
 
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
@@ -30,12 +32,15 @@
   </group>
 
   <!-- send fake joint values -->
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+  <node if="$(arg fake_execution)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
    <rosparam param="source_list">["/sawback_moveitcpp/fake_controller_joint_states"]</rosparam>
+   <remap from="/joint_states" to="/robot/joint_states" />
   </node>
 
   <!-- Start robot state publisher -->
-  <node name="sawback_robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  <node if="$(arg fake_execution)" name="sawback_robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+    <remap from="/joint_states" to="/robot/joint_states" />
+  </node>
 
 
 </launch>
