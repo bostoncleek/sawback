@@ -1,0 +1,24 @@
+# The two parameters bellow can be set for each controller
+# allowed_execution_duration_scaling: When determining the expected duration of a trajectory,
+# this multiplicative factor is applied to get the allowed duration of execution.
+# allowed_goal_duration_margin: Allow more than the expected execution time before
+# triggering a trajectory cancel (applied after scaling)
+controller_list:
+  - name: /robot/limb/right
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - right_j0
+      - right_j1
+      - right_j2
+      - right_j3
+      - right_j4
+      - right_j5
+      - right_j6
+  - name: /robot/end_effector/right
+    action_ns: gripper_action
+    type: GripperCommand
+    default: true
+    joints:
+      - right_gripper_l_finger_joint

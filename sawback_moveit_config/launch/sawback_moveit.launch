@@ -1,0 +1,41 @@
+<launch>
+  
+  <!-- Moveitcpp parmeters -->
+  <rosparam ns="sawback_moveitcpp" command="load" file="$(find sawback_moveit_config)/config/moveitcpp.yaml" />
+
+  <!-- Planning Pipeline -->
+  <include ns="/sawback_moveitcpp/ompl"
+    file="$(find sawback_moveit_config)/launch/ompl_planning_pipeline.launch.xml"/>
+
+  <!-- Trajectory execution  -->
+  <include ns="sawback_moveitcpp" file="$(find sawback_moveit_config)/launch/trajectory_execution.launch.xml">
+    <arg name="moveit_controller_manager" value="fake"/>
+  </include>
+
+  <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
+  <param name="robot_description"
+     command="$(find xacro)/xacro $(find sawback_description)/urdf/sawback.urdf.xacro
+           gazebo:=false electric_gripper:=true
+           pedestal:=false static:=false"/>
+
+  <param name="robot_description_semantic"
+    command="$(find xacro)/xacro $(find sawback_moveit_config)/srdf/sawback.srdf"/>
+
+  <group ns="robot_description_planning">
+    <rosparam command="load" file="$(find sawback_moveit_config)/config/joint_limits.yaml"/>
+  </group>
+
+  <group ns="robot_description_kinematics">
+   <rosparam command="load" file="$(find sawback_moveit_config)/config/kinematics.yaml"/>
+  </group>
+
+  <!-- send fake joint values -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+   <rosparam param="source_list">["/sawback_moveitcpp/fake_controller_joint_states"]</rosparam>
+  </node>
+
+  <!-- Start robot state publisher -->
+  <node name="sawback_robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+
+</launch>
