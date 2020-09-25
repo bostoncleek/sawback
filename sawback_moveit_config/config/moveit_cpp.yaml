@@ -1,7 +1,7 @@
 planning_scene_monitor_options:
   name: "planning_scene_monitor"
   robot_description: "robot_description"
-  joint_state_topic: "/joint_states"
+  joint_state_topic: "/robot/joint_states"
   attached_collision_object_topic: "/planning_scene_monitor"
   publish_planning_scene_topic: "/publish_planning_scene"
   monitored_planning_scene_topic: "/monitored_planning_scene"
