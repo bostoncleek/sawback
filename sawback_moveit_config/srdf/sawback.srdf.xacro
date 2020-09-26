@@ -10,10 +10,23 @@
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
     <group name="right_arm">
-        <chain base_link="base" tip_link="right_gripper_tip"/>
+      <chain base_link="base" tip_link="right_gripper_tip"/>
     </group>
+
+    <group name="hand">
+      <joint name="right_gripper_l_finger_joint"/>
+      <joint name="right_gripper_r_finger_joint"/>
+      <joint name="right_hand"/>
+    </group>
+    <group_state name="open" group="hand">
+      <joint name="right_gripper_l_finger_joint" value="0.0416" />
+    </group_state>
+    <group_state name="close" group="hand">
+      <joint name="right_gripper_l_finger_joint" value="0" />
+    </group_state>
+
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="right_hang_eef" parent_link="right_hand" group="right_arm"/>
+    <end_effector name="right_hang_eef" parent_link="right_hand" group="hand" parent_group="right_arm"/>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="chassis_link" link2="controller_enclosure" reason="Adjacent"/>
     <disable_collisions link1="chassis_link" link2="front_laser" reason="Adjacent"/>
