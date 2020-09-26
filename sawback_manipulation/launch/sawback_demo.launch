@@ -1,21 +1,20 @@
 <launch>
   <arg name="fake_execution" default="false"/>
 
-  <!-- <node pkg="sawback_manipulation" type="sawback_demo" name="sawback_moveitcpp" output="screen"/> -->
+  <node pkg="sawback_manipulation" type="sawback_demo" name="sawback_moveitcpp" output="screen"/>
 
-  <node pkg="topic_tools" type="relay" name="cmd_vel_relay"
-        args="/ridgeback/joint_states /robot/joint_states"/>
+  <!-- If the joints on ridgeback are required by moveit -->
+  <!-- <node pkg="topic_tools" type="relay" name="cmd_vel_relay"
+        args="/ridgeback/joint_states /robot/joint_states"/> -->
 
+  <!-- No robot_state_publisher processing the sawback urdf
+       it is easiest to publish a static tf between both robots -->
   <node pkg="tf2_ros" type="static_transform_publisher"
-   name="mount_link_to_base" args="0 0 0.0099 0 0 0 1 mount_link base"/>
+    name="mount_link_to_base" args="0 0 0.0099 0 0 0 1 mount_link base"/>
 
-   <node pkg="tf2_ros" type="static_transform_publisher"
-    name="base_link_to_mount_link" args="0.19  0 0.280 0 0 0 1 base_link mount_link"/>
-
-
-  <!-- <include file="$(find sawback_moveit_config)/launch/sawback_moveit.launch">
+  <include file="$(find sawback_moveit_config)/launch/sawback_moveit.launch">
     <arg name="fake_execution" value="$(arg fake_execution)"/>
-  </include> -->
+  </include>
 
   <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"
           args="-d $(find sawback_manipulation)/config/sawback_demo.rviz" output="screen">
