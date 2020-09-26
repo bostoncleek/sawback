@@ -7,7 +7,6 @@
 
   <!-- Ridgeback -->
   <xacro:include filename="$(find nuridgeback_description)/urdf/nuridgeback.urdf.xacro"/>
-  <xacro:include filename="$(find sawback_description)/urdf/sawyer_mount.urdf.xacro"/>
 
   <!-- Sawyer -->
   <xacro:include filename="$(find sawyer_description)/urdf/sawyer.urdf.xacro">
