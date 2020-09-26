@@ -21,7 +21,7 @@
            pedestal:=false static:=false"/>
 
   <param name="robot_description_semantic"
-    command="$(find xacro)/xacro $(find sawback_moveit_config)/srdf/sawback.srdf"/>
+    command="$(find xacro)/xacro $(find sawback_moveit_config)/srdf/sawback.srdf.xacro"/>
 
   <group ns="robot_description_planning">
     <rosparam command="load" file="$(find sawback_moveit_config)/config/joint_limits.yaml"/>
@@ -41,5 +41,5 @@
   <node if="$(arg fake_execution)" name="sawback_robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
     <remap from="/joint_states" to="/robot/joint_states" />
   </node>
-  
+
 </launch>
