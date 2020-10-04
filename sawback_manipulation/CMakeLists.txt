@@ -19,34 +19,71 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
 )
 
+find_package(Eigen3 REQUIRED)
+
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES sawback_manipulation
+ INCLUDE_DIRS include
+ LIBRARIES ${PROJECT_NAME}_solvers
  CATKIN_DEPENDS
   moveit_ros_perception
 	moveit_ros_planning
 	moveit_ros_planning_interface
 	moveit_visual_tools
 	roscpp
-#  DEPENDS system_lib
+ DEPENDS
+ 	EIGEN3
 )
 
 include_directories(
-# include
+	SYSTEM
+  ${EIGEN3_INCLUDE_DIRS}
+)
+
+include_directories(
+include
   ${catkin_INCLUDE_DIRS}
+)
+
+add_library(${PROJECT_NAME}_solvers
+	src/${PROJECT_NAME}/solvers/cartesian_path.cpp
+)
+
+# add_dependencies(${PROJECT_NAME}
+# 	${${PROJECT_NAME}_EXPORTED_TARGETS}
+# 	${catkin_EXPORTED_TARGETS}
+# )
+
+target_link_libraries(${PROJECT_NAME}_solvers
+	${catkin_LIBRARIES}
+	${Eigen3_LIBRARIES}
 )
 
 add_executable(sawback_demo src/sawback_demo_node.cpp)
 
-add_dependencies(sawback_demo ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(sawback_demo
+	${${PROJECT_NAME}_EXPORTED_TARGETS}
+	${catkin_EXPORTED_TARGETS}
+)
 
 target_link_libraries(sawback_demo
-  ${catkin_LIBRARIES}
+	${catkin_LIBRARIES}
+	${Eigen3_LIBRARIES}
+	${PROJECT_NAME}_solvers
 )
 
 # Mark executables for installation
 install(TARGETS sawback_demo
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(TARGETS ${PROJECT_NAME}_solvers
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
 install(DIRECTORY launch/ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)
