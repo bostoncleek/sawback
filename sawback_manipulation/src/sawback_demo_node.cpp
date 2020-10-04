@@ -1,27 +1,30 @@
 /**
-* @file sawback_demo_node.cpp
-* @author Boston Cleek
-* @date 25 Sep 2020
-* @brief Demo showing capabilities of sawback using moveitcpp
-*/
+ * @file sawback_demo_node.cpp
+ * @author Boston Cleek
+ * @date 25 Sep 2020
+ * @brief Demo showing capabilities of sawback using moveitcpp
+ */
 
 // C++
 #include <iostream>
 #include <memory>
 #include <vector>
 
-// ROS
-#include <ros/ros.h>
+// // ROS
+#include <geometry_msgs/PointStamped.h>
 #include <moveit/moveit_cpp/moveit_cpp.h>
 #include <moveit/moveit_cpp/planning_component.h>
-#include <geometry_msgs/PointStamped.h>
 #include <moveit_visual_tools/moveit_visual_tools.h>
-
-#include <moveit/trajectory_processing/iterative_time_parameterization.h>
+#include <ros/ros.h>
+//
 #include <moveit/robot_state/cartesian_interpolator.h>
-
+#include <moveit/trajectory_processing/iterative_time_parameterization.h>
 #include <moveit/robot_trajectory/robot_trajectory.h>
+//
+#include <sawback_manipulation/solvers/cartesian_path.hpp>
 
+static const std::string PLANNING_GROUP = "right_arm";
+static const std::string LOGNAME = "sawback_moveitcpp";
 
 namespace rvt = rviz_visual_tools;
 
@@ -31,9 +34,6 @@ int main(int argc, char** argv)
   ros::NodeHandle nh("/sawback_moveitcpp");
   ros::AsyncSpinner spinner(4);
   spinner.start();
-
-  static const std::string PLANNING_GROUP = "right_arm";
-  static const std::string LOGNAME = "sawback_moveitcpp";
 
   /* Otherwise robot with zeros joint_states */
   ros::Duration(1.0).sleep();
@@ -45,10 +45,10 @@ int main(int argc, char** argv)
 
   auto planning_components =
       std::make_shared<moveit::planning_interface::PlanningComponent>(PLANNING_GROUP, moveit_cpp_ptr);
-  auto robot_model_ptr = moveit_cpp_ptr->getRobotModel();
-  auto robot_state_ptr = planning_components->getStartState();
-  auto joint_model_group_ptr = robot_model_ptr->getJointModelGroup(PLANNING_GROUP);
 
+  moveit::core::RobotModelConstPtr robot_model_ptr = moveit_cpp_ptr->getRobotModel();
+  moveit::core::RobotStatePtr robot_state_ptr = planning_components->getStartState();
+  const moveit::core::JointModelGroup* joint_model_group_ptr = robot_model_ptr->getJointModelGroup(PLANNING_GROUP);
 
   moveit_visual_tools::MoveItVisualTools visual_tools("base_link", rvt::RVIZ_MARKER_TOPIC,
                                                       moveit_cpp_ptr->getPlanningSceneMonitor());
@@ -60,7 +60,6 @@ int main(int argc, char** argv)
   visual_tools.publishText(text_pose, "Sawback Demo", rvt::WHITE, rvt::XLARGE);
   visual_tools.trigger();
 
-
   planning_components->setStartStateToCurrentState();
 
   // robot_state_ptr->printStateInfo();
@@ -70,15 +69,18 @@ int main(int argc, char** argv)
   visual_tools.publishText(text_pose, "Start Pose", rvt::WHITE, rvt::XLARGE);
   visual_tools.trigger();
 
-  // ROS_INFO_STREAM_NAMED("Root link: %s", robot_model_ptr->getRootLinkName().c_str());
-  // ROS_INFO_STREAM_NAMED("Model frame: %s", robot_model_ptr->getModelFrame ().c_str());
+  // ROS_INFO_STREAM_NAMED("Root link: %s",
+  // robot_model_ptr->getRootLinkName().c_str()); ROS_INFO_STREAM_NAMED("Model
+  // frame: %s", robot_model_ptr->getModelFrame ().c_str());
   //
-  // std::cout << robot_state_ptr->getGlobalLinkTransform("right_hand").matrix() << std::endl;
+  // std::cout << robot_state_ptr->getGlobalLinkTransform("right_hand").matrix()
+  // << std::endl;
   //
   // bool frame_found = false;
   // bool *frame_found_ptr = &frame_found;
-  // std::cout << robot_state_ptr->getFrameTransform("right_hand", frame_found_ptr).matrix() << std::endl;
-  // std::cout << "Frame found: " << frame_found << std::endl;
+  // std::cout << robot_state_ptr->getFrameTransform("right_hand",
+  // frame_found_ptr).matrix() << std::endl; std::cout << "Frame found: " <<
+  // frame_found << std::endl;
 
   geometry_msgs::PoseStamped target_pose1;
   target_pose1.header.frame_id = "base_link";
@@ -107,8 +109,8 @@ int main(int argc, char** argv)
     planning_components->execute();
   }
 
-  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to perfrom cartesian planning");
-
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to "
+                      "perfrom cartesian planning");
 
   planning_components->setStartStateToCurrentState();
   robot_state_ptr = moveit_cpp_ptr->getCurrentState();
@@ -118,36 +120,11 @@ int main(int argc, char** argv)
   direction.y() = 0.0;
   direction.z() = 1.0;
 
-  moveit::core::MaxEEFStep max_step(0.01);
-  moveit::core::JumpThreshold jmp_thresh(1.5);
-
-
-  const moveit::core::LinkModel* link_model_ptr = joint_model_group_ptr->getLinkModel("right_hand");
-  std::vector<moveit::core::RobotStatePtr> trajectory;
-
-  const double frac = moveit::core::CartesianInterpolator::computeCartesianPath(robot_state_ptr.get(),
-                                                                                joint_model_group_ptr,
-                                                                                trajectory,
-                                                                                link_model_ptr,
-                                                                                direction,
-                                                                                true,
-                                                                                0.2,
-                                                                                max_step,
-                                                                                jmp_thresh);
-
-  ROS_INFO_NAMED(LOGNAME, "Fraction of trajectory %f: ", frac);
-  ROS_INFO_NAMED(LOGNAME, "length of trajectory %ld: ", trajectory.size());
-
   robot_trajectory::RobotTrajectoryPtr result;
-  result.reset(new robot_trajectory::RobotTrajectory(moveit_cpp_ptr->getRobotModel(), joint_model_group_ptr));
 
-  for (const auto& waypoint : trajectory)
-  {
-    result->addSuffixWayPoint(waypoint, 0.0);
-  }
-
-  trajectory_processing::IterativeParabolicTimeParameterization timing;
-  timing.computeTimeStamps(*result, 1.0, 1.0);
+  sawback_manipulation::solvers::CartesianPath cartesian_planner;
+  bool valid = cartesian_planner.plan(robot_state_ptr, result, robot_model_ptr, joint_model_group_ptr, "right_hand",
+                                      direction, true, 0.5);
 
   moveit_cpp_ptr->execute(PLANNING_GROUP, result);
 
@@ -155,16 +132,5 @@ int main(int argc, char** argv)
   ros::waitForShutdown();
   return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 //
