@@ -7,6 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
         - /PlanningScene1
+        - /TF1/Frames1
       Splitter Ratio: 0.506465494632721
     Tree Height: 478
   - Class: rviz/Selection
@@ -71,6 +72,14 @@ Visualization Manager:
       Update Interval: 0
       Value: false
       Visual Enabled: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /rviz_visual_tools
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
     - Class: moveit_rviz_plugin/PlanningScene
       Enabled: true
       Move Group Namespace: ""
@@ -366,6 +375,21 @@ Visualization Manager:
         Show Robot Collision: false
         Show Robot Visual: true
       Value: true
+    - Class: rviz/TF
+      Enabled: false
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        {}
+      Update Interval: 0
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -394,7 +418,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.442131757736206
+      Distance: 2.529707431793213
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -410,9 +434,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6897975206375122
+      Pitch: -0.00020224601030349731
       Target Frame: <Fixed Frame>
-      Yaw: 0.7804070115089417
+      Yaw: 4.590470314025879
     Saved: ~
 Window Geometry:
   Displays:
@@ -432,5 +456,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1456
-  X: 382
-  Y: 27
+  X: 2384
+  Y: 42
