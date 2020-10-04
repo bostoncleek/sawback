@@ -14,5 +14,9 @@
   <depend>moveit_ros_planning_interface</depend>
   <depend>moveit_visual_tools</depend>
   <depend>roscpp</depend>
-  
+
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>sawback_moveit_config</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+
 </package>
