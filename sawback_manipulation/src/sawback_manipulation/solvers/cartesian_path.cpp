@@ -2,9 +2,7 @@
  * @file cartesian_path.cpp
  * @author Boston Cleek
  * @date 4 Oct 2020
- * @copyright 2020 Joe Bloggs
  * @brief Plan cartesian path using MoveIt's computeCartesianPath()
- * https://github.com/ros-planning/moveit/blob/master/moveit_core/robot_state/include/moveit/robot_state/cartesian_interpolator.h
  */
 
 #include <iostream>

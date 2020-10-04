@@ -75,7 +75,7 @@ int main(int argc, char** argv)
   //
   // std::cout << robot_state_ptr->getGlobalLinkTransform("right_hand").matrix()
   // << std::endl;
-  //
+
   // bool frame_found = false;
   // bool *frame_found_ptr = &frame_found;
   // std::cout << robot_state_ptr->getFrameTransform("right_hand",
@@ -122,9 +122,15 @@ int main(int argc, char** argv)
 
   robot_trajectory::RobotTrajectoryPtr result;
 
+  std::cout << robot_state_ptr->getGlobalLinkTransform("right_hand").matrix()
+  << std::endl;
+
   sawback_manipulation::solvers::CartesianPath cartesian_planner;
   bool valid = cartesian_planner.plan(robot_state_ptr, result, robot_model_ptr, joint_model_group_ptr, "right_hand",
                                       direction, true, 0.5);
+
+  std::cout << robot_state_ptr->getGlobalLinkTransform("right_hand").matrix()
+  << std::endl;
 
   moveit_cpp_ptr->execute(PLANNING_GROUP, result);
 
