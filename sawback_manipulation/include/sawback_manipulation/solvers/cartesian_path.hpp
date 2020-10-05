@@ -55,7 +55,7 @@ public:
   bool plan(moveit::core::RobotStatePtr& robot_start_state_ptr, robot_trajectory::RobotTrajectoryPtr& result,
             const moveit::core::RobotModelConstPtr& robot_model_ptr,
             const moveit::core::JointModelGroup* joint_model_group_ptr, const std::string& link,
-            const Eigen::Vector3d direction, bool global_reference_frame, double distance);
+            const Eigen::Ref<Eigen::Vector3d> direction, bool global_reference_frame, double distance);
 
 private:
   double max_step_;                         // max step size in path for translation
