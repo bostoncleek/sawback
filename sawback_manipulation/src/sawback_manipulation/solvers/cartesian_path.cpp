@@ -42,9 +42,8 @@ CartesianPath::CartesianPath(double max_step, double jump_threshold, double min_
 
 bool CartesianPath::plan(moveit::core::RobotStatePtr& robot_start_state_ptr,
                          robot_trajectory::RobotTrajectoryPtr& result,
-                         const moveit::core::RobotModelConstPtr& robot_model_ptr,
                          const moveit::core::JointModelGroup* joint_model_group_ptr, const std::string& link,
-                         const Eigen::Ref<Eigen::Vector3d> direction, bool global_reference_frame, double distance)
+                         const Eigen::Vector3d& direction, bool global_reference_frame, double distance)
 {
   // store trajectory from cartesian planner
   std::vector<moveit::core::RobotStatePtr> trajectory;
@@ -66,7 +65,7 @@ bool CartesianPath::plan(moveit::core::RobotStatePtr& robot_start_state_ptr,
 
   // Copy trajectory to the result
   // This allows MoveIt to execute the result
-  result.reset(new robot_trajectory::RobotTrajectory(robot_model_ptr, joint_model_group_ptr));
+  // result.reset(new robot_trajectory::RobotTrajectory(robot_model_ptr, joint_model_group_ptr));
 
   for (const auto& waypoint : trajectory)
   {
