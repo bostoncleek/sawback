@@ -27,8 +27,10 @@ PickPlace::PickPlace(const moveit::planning_interface::MoveItCppPtr& moveit_cpp,
 {
   // TODO: read cartesian path parameters
 
-  // Only used for the arm planning group
-  planning_component_ptr_.reset(new moveit::planning_interface::PlanningComponent(arm_planning_group_, moveit_cpp_ptr_));
+  planning_component_arm_ptr_.reset(
+      new moveit::planning_interface::PlanningComponent(arm_planning_group_, moveit_cpp_ptr_));
+  planning_component_gripper_ptr_.reset(
+      new moveit::planning_interface::PlanningComponent(gripper_planning_group, moveit_cpp_ptr_));
 
   robot_model_ptr_.reset(moveit_cpp_ptr_->getRobotModel().get());
   joint_model_group_ptr_.reset(robot_model_ptr_->getJointModelGroup(arm_planning_group_));
@@ -47,10 +49,11 @@ PickPlace::PickPlace(const moveit::planning_interface::MoveItCppPtr& moveit_cpp,
   visual_tools_ptr_->loadRemoteControl();
 
   Eigen::Isometry3d text_pose_ = Eigen::Isometry3d::Identity();
-  text_pose_.translation().z() = 1.00;
+  text_pose_.translation().z() = 0.5;
 
-  visual_tools_ptr_->publishText(text_pose_, "Sawback Demo", rviz_visual_tools::WHITE, rviz_visual_tools::XLARGE);
-  visual_tools_ptr_->trigger();
+  // visual_tools_ptr_->publishText(text_pose_, "sawback manipulation", rviz_visual_tools::WHITE,
+  //                                rviz_visual_tools::XLARGE);
+  // visual_tools_ptr_->trigger();
 }
 
 void PickPlace::initPose(double pre_distance, double post_distance, const Eigen::Isometry3d& pose)
@@ -105,71 +108,121 @@ bool PickPlace::planPick()
 
   const Eigen::Isometry3d post_grasp_pose = grasp_pose * Tgrasp_post;
 
-  std::vector<std::pair<Eigen::Isometry3d, std::string>> frames = { std::make_pair(start_pose, "Start pose"),
-                                                                    std::make_pair(pre_grasp_pose, "Pre-grasp"),
-                                                                    std::make_pair(grasp_pose, "Grasp"),
-                                                                    std::make_pair(post_grasp_pose, "Post-grasp") };
+  const std::vector<std::pair<Eigen::Isometry3d, std::string>> frames = {
+    std::make_pair(start_pose, "Start pose"), std::make_pair(pre_grasp_pose, "Pre-grasp"),
+    std::make_pair(grasp_pose, "Grasp"), std::make_pair(post_grasp_pose, "Post-grasp")
+  };
+  // Visualize planning frames
+  displayFrames(frames);
 
-  vizFrames(frames);
-
-
+  //////////////////////////////////////////////////////////////////////////
   // 1) Move to offset
   auto trajectory_pre_grasp =
       std::make_shared<robot_trajectory::RobotTrajectory>(robot_model_ptr_, arm_planning_group_);
 
-  if (!planTo(trajectory_pre_grasp, pre_grasp_pose))
+  const moveit::core::RobotStateConstPtr robot_start_state =
+      std::const_pointer_cast<const moveit::core::RobotState>(robot_start_state_ptr);
+
+  // std::cout << "------------" << std::endl;
+  // std::cout << " Start " << std::endl;
+  // robot_start_state->printStatePositions();
+  // std::cout << "------------" << std::endl;
+
+  if (!planTo(trajectory_pre_grasp, robot_start_state, pre_grasp_pose))
   {
     return false;
   }
 
-  moveit_cpp_ptr_->execute(arm_planning_group_, trajectory_pre_grasp);
+  trajectories_.emplace_back(std::make_pair(trajectory_pre_grasp, arm_planning_group_));
 
-  // trajectories_.emplace_back(trajectory_pre_grasp);
+  //////////////////////////////////////////////////////////////////////////
+  // 2) Attach object from scene, disable collisions, and open gripper
+  // TODO: add objects to planning scene
 
-  // 2) Move relative to grasp in z-axis of end-effector
+  auto trajectory_open = std::make_shared<robot_trajectory::RobotTrajectory>(robot_model_ptr_, gripper_planning_group_);
+
+  const moveit::core::RobotStateConstPtr pre_gripper_open_state =
+      std::const_pointer_cast<const moveit::core::RobotState>(trajectory_pre_grasp->getLastWayPointPtr());
+
+  // std::cout << "------------" << std::endl;
+  // std::cout << " Pre cartesian 1 (before gripper opens) " << std::endl;
+  // pre_gripper_open_state->printStatePositions();
+  // std::cout << "------------" << std::endl;
+
+  if (!planGripper(trajectory_open, pre_gripper_open_state, "open"))
+  {
+    return false;
+  }
+
+  trajectories_.emplace_back(std::make_pair(trajectory_open, gripper_planning_group_));
+
+  //////////////////////////////////////////////////////////////////////////
+  // 3) Move relative to grasp in z-axis of end-effector
   auto trajectory_grasp = std::make_shared<robot_trajectory::RobotTrajectory>(robot_model_ptr_, arm_planning_group_);
 
-  // moveit::core::RobotStatePtr start_state = trajectory_pre_grasp->getFirstWayPointPtr();
+  const moveit::core::RobotStateConstPtr pre_grasp_state =
+      std::const_pointer_cast<const moveit::core::RobotState>(trajectory_open->getLastWayPointPtr());
 
-  moveit::core::RobotStatePtr start_state = trajectory_pre_grasp->getLastWayPointPtr();
+  // std::cout << "------------" << std::endl;
+  // std::cout << " Pre cartesian 1 (gripper open) " << std::endl;
+  // pre_grasp_state->printStatePositions();
+  // std::cout << "------------" << std::endl;
 
-  planRelative(trajectory_grasp, start_state, direction, false, pre_distance_);
-  // if (!planRelative(trajectory_grasp, pre_grasp_pose, direction, false, pre_distance_))
-  // {
-  //   return false;
-  // }
+  if (!planRelative(trajectory_grasp, pre_grasp_state, direction, false, pre_distance_))
+  {
+    return false;
+  }
 
-  ROS_WARN_NAMED(LOGNAME, "Length of trajectory %d: ", trajectory_grasp->getWayPointCount());
+  ROS_WARN_NAMED(LOGNAME, "Approach Length of trajectory %lu: ", trajectory_grasp->getWayPointCount());
 
-  moveit_cpp_ptr_->execute(arm_planning_group_, trajectory_grasp);
+  trajectories_.emplace_back(std::make_pair(trajectory_grasp, arm_planning_group_));
 
+  //////////////////////////////////////////////////////////////////////////
+  // 4) Attach object from scene, disable collisions, and close gripper
+  // TODO: add objects to planning scene
 
-  // trajectories_.emplace_back(trajectory_grasp);
+  auto trajectory_close =
+      std::make_shared<robot_trajectory::RobotTrajectory>(robot_model_ptr_, gripper_planning_group_);
 
-  // 3) Attach object from scene, disable collisions, and close gripper
+  const moveit::core::RobotStateConstPtr pre_gripper_close_state =
+      std::const_pointer_cast<const moveit::core::RobotState>(trajectory_grasp->getLastWayPointPtr());
 
-  // 4) Move relative to grasp in z-axis of root link urdf frame
-  // auto trajectory_post_grasp = std::make_shared<robot_trajectory::RobotTrajectory>(robot_model_ptr_,
-  // arm_planning_group_); planRelative(trajectory_post_grasp, grasp_pose, direction, true, post_distance_);
-  // // if (!planRelative(trajectory_post_grasp, grasp_pose, direction, true, post_distance_))
-  // // {
-  // //   return false;
-  // // }
-  //
-  // trajectories_.emplace_back(trajectory_post_grasp);
-  //
-  //
+  // std::cout << "------------" << std::endl;
+  // std::cout << " Completed cartesian 1 (gripper open) " << std::endl;
+  // pre_gripper_close_state->printStatePositions();
+  // std::cout << "------------" << std::endl;
 
+  if (!planGripper(trajectory_close, pre_gripper_close_state, "close"))
+  {
+    return false;
+  }
 
+  trajectories_.emplace_back(std::make_pair(trajectory_close, gripper_planning_group_));
 
-  // visual_tools_ptr_->publishTrajectoryLine(trajectory_pre_grasp, joint_model_group_ptr_.get());
-  // visual_tools_ptr_->trigger();
-  //
-  //
-  // visual_tools_ptr_->publishTrajectoryLine(trajectory_grasp, joint_model_group_ptr_.get());
-  // // // visual_tools_ptr_->publishTrajectoryLine(trajectory_post_grasp, joint_model_group_ptr_.get());
-  // visual_tools_ptr_->trigger();
+  //////////////////////////////////////////////////////////////////////////
+  // 5) Move relative to grasp in z-axis of root link urdf frame
+  auto trajectory_post_grasp =
+      std::make_shared<robot_trajectory::RobotTrajectory>(robot_model_ptr_, arm_planning_group_);
 
+  const moveit::core::RobotStateConstPtr grasp_state =
+      std::const_pointer_cast<const moveit::core::RobotState>(trajectory_close->getLastWayPointPtr());
+
+  // std::cout << "------------" << std::endl;
+  // std::cout << " Pre cartesian 2 (gripper close) " << std::endl;
+  // grasp_state->printStatePositions();
+  // std::cout << "------------" << std::endl;
+
+  if (!planRelative(trajectory_post_grasp, grasp_state, direction, true, post_distance_))
+  {
+    return false;
+  }
+
+  ROS_WARN_NAMED(LOGNAME, "Retreat Length of trajectory %lu: ", trajectory_post_grasp->getWayPointCount());
+
+  trajectories_.emplace_back(std::make_pair(trajectory_post_grasp, arm_planning_group_));
+
+  // Visualize plan
+  displayTrajectory();
 
   return true;
 }
@@ -180,25 +233,49 @@ bool PickPlace::planPlace()
 
 bool PickPlace::execute()
 {
+  int i = 1;
   for (const auto& trajectory : trajectories_)
   {
-    moveit_cpp_ptr_->execute(arm_planning_group_, trajectory);
+    std::cout << "Traj: " << i << std::endl;
+    if (trajectory.second == arm_planning_group_)
+    {
+      moveit_cpp_ptr_->execute(arm_planning_group_, trajectory.first);
+    }
+    else
+    {
+      moveit_cpp_ptr_->execute(gripper_planning_group_, trajectory.first);
+    }
+    i++;
   }
 }
 
-void PickPlace::vizFrames(const std::vector<std::pair<Eigen::Isometry3d, std::string>>& frames)
+void PickPlace::displayFrames(const std::vector<std::pair<Eigen::Isometry3d, std::string>>& frames)
 {
   for (const auto& frame : frames)
   {
     visual_tools_ptr_->publishAxisLabeled(frame.first, frame.second);
-    visual_tools_ptr_->publishText(text_pose_, frame.second, rviz_visual_tools::WHITE, rviz_visual_tools::XLARGE);
+    // visual_tools_ptr_->publishText(text_pose_, frame.second, rviz_visual_tools::WHITE, rviz_visual_tools::XLARGE);
   }
   visual_tools_ptr_->trigger();
 }
 
-bool PickPlace::planTo(robot_trajectory::RobotTrajectoryPtr& result, const Eigen::Isometry3d& goal_pose)
+void PickPlace::displayTrajectory()
 {
-  // TODO: send goal in frame of base_link so visualization looks correct in rviz
+  for (const auto& trajectory : trajectories_)
+  {
+    if (trajectory.second == arm_planning_group_)
+    {
+      visual_tools_ptr_->publishTrajectoryLine(trajectory.first, joint_model_group_ptr_.get());
+    }
+  }
+  visual_tools_ptr_->trigger();
+}
+
+bool PickPlace::planTo(robot_trajectory::RobotTrajectoryPtr& result,
+                       const moveit::core::RobotStateConstPtr& start_state, const Eigen::Isometry3d& goal_pose)
+{
+  // TODO: Sent in starting robot state
+  // TODO: check moveit_msgs::MoveItErrorCodes::SUCCESS
 
   // Convert from Eigen to poseStamped
   // Extract orientation
@@ -215,12 +292,13 @@ bool PickPlace::planTo(robot_trajectory::RobotTrajectoryPtr& result, const Eigen
   target.pose.orientation.z = quat.z();
 
   // Plan from current state
-  planning_component_ptr_->setStartStateToCurrentState();
+  planning_component_arm_ptr_->setStartState(*start_state.get());
 
   // Plan
-  planning_component_ptr_->setGoal(target, eef_link_);
-  moveit::planning_interface::PlanningComponent::PlanSolution plan = planning_component_ptr_->plan();
+  planning_component_arm_ptr_->setGoal(target, eef_link_);
+  const moveit::planning_interface::PlanningComponent::PlanSolution plan = planning_component_arm_ptr_->plan();
 
+  // if (!plan.error_code != moveit_msgs::MoveItErrorCodes::SUCCESS)
   if (!plan)
   {
     ROS_ERROR_NAMED(LOGNAME, "Planning failed");
@@ -231,24 +309,38 @@ bool PickPlace::planTo(robot_trajectory::RobotTrajectoryPtr& result, const Eigen
   return true;
 }
 
-bool PickPlace::planRelative(robot_trajectory::RobotTrajectoryPtr& result, moveit::core::RobotStatePtr& robot_start_state_ptr, const Eigen::Vector3d& direction,
+bool PickPlace::planRelative(robot_trajectory::RobotTrajectoryPtr& result,
+                             const moveit::core::RobotStateConstPtr& start_state, const Eigen::Vector3d& direction,
                              bool root_frame, double distance)
 {
-  // starting robot state
-  // auto start_robot_state_ptr = std::make_shared<moveit::core::RobotState>(robot_model_ptr_);
-  // // Set using IK
-  // start_robot_state_ptr->setFromIK(joint_model_group_ptr_.get(), start_pose);
-  // auto start_robot_state_ptr = moveit_cpp_ptr_->getCurrentState();
+  auto robot_start_state_ptr = std::make_shared<moveit::core::RobotState>(*start_state.get());
 
-  moveit::core::RobotStatePtr start_state = moveit_cpp_ptr_->getCurrentState();
-
-  if (!cartesian_path_ptr_->plan(start_state, result, joint_model_group_ptr_.get(), eef_link_, direction,
+  if (!cartesian_path_ptr_->plan(robot_start_state_ptr, result, joint_model_group_ptr_.get(), eef_link_, direction,
                                  root_frame, distance))
   {
-    // ROS_ERROR_NAMED(LOGNAME, "Cartesian planning failed");
+    ROS_ERROR_NAMED(LOGNAME, "Cartesian planning failed");
     return false;
   }
 
+  return true;
+}
+
+bool PickPlace::planGripper(robot_trajectory::RobotTrajectoryPtr& result,
+                            const moveit::core::RobotStateConstPtr& start_state, const std::string& state)
+{
+  planning_component_gripper_ptr_->setStartState(*start_state.get());
+  planning_component_gripper_ptr_->setGoal(state);
+
+  const moveit::planning_interface::PlanningComponent::PlanSolution plan = planning_component_gripper_ptr_->plan();
+
+  // if (!plan.error_code != moveit_msgs::MoveItErrorCodes::SUCCESS)
+  if (!plan)
+  {
+    ROS_ERROR_NAMED(LOGNAME, "Gripper planning failed");
+    return false;
+  }
+
+  result = plan.trajectory;
   return true;
 }
 

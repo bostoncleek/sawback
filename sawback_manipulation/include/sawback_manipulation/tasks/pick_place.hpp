@@ -41,17 +41,24 @@ public:
 
   bool execute();
 
-  void vizFrames(const std::vector<std::pair<Eigen::Isometry3d, std::string>>& frames);
+  void displayFrames(const std::vector<std::pair<Eigen::Isometry3d, std::string>>& frames);
+
+  void displayTrajectory();
 
 private:
-  bool planTo(robot_trajectory::RobotTrajectoryPtr& result, const Eigen::Isometry3d& goal_pose);
+  bool planTo(robot_trajectory::RobotTrajectoryPtr& result, const moveit::core::RobotStateConstPtr& start_state,
+              const Eigen::Isometry3d& goal_pose);
 
-  bool planRelative(robot_trajectory::RobotTrajectoryPtr& result, moveit::core::RobotStatePtr& robot_start_state_ptr,
+  bool planRelative(robot_trajectory::RobotTrajectoryPtr& result, const moveit::core::RobotStateConstPtr& start_state,
                     const Eigen::Vector3d& direction, bool root_frame, double distance);
+
+  bool planGripper(robot_trajectory::RobotTrajectoryPtr& result, const moveit::core::RobotStateConstPtr& start_state,
+                   const std::string& state);
 
 private:
   moveit::planning_interface::MoveItCppPtr moveit_cpp_ptr_;
-  moveit::planning_interface::PlanningComponentPtr planning_component_ptr_;
+  moveit::planning_interface::PlanningComponentPtr planning_component_arm_ptr_;
+  moveit::planning_interface::PlanningComponentPtr planning_component_gripper_ptr_;
 
   std::string arm_planning_group_;      // planning group arm name
   std::string gripper_planning_group_;  // planning group gripper name
@@ -62,9 +69,9 @@ private:
   // std::string action_;  // pick or place action
 
   moveit::core::RobotModelConstPtr robot_model_ptr_;
-  moveit::core::JointModelGroupConstPtr joint_model_group_ptr_;
+  moveit::core::JointModelGroupConstPtr joint_model_group_ptr_;  // only for arm
 
-  std::vector<robot_trajectory::RobotTrajectoryPtr> trajectories_;
+  std::vector<std::pair<robot_trajectory::RobotTrajectoryPtr, std::string>> trajectories_;
 
   sawback_manipulation::solvers::CartesianPathUniquePtr cartesian_path_ptr_;
   std::unique_ptr<moveit_visual_tools::MoveItVisualTools> visual_tools_ptr_;
