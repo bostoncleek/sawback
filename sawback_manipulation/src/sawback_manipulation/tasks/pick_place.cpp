@@ -135,14 +135,20 @@ bool PickPlace::planPick()
 
   trajectories_.emplace_back(std::make_pair(trajectory_pre_grasp, arm_planning_group_));
 
+  moveit_cpp_ptr_->execute(arm_planning_group_, trajectory_pre_grasp);
+
   //////////////////////////////////////////////////////////////////////////
   // 2) Attach object from scene, disable collisions, and open gripper
   // TODO: add objects to planning scene
 
   auto trajectory_open = std::make_shared<robot_trajectory::RobotTrajectory>(robot_model_ptr_, gripper_planning_group_);
 
+  // const moveit::core::RobotStateConstPtr pre_gripper_open_state =
+  //     std::const_pointer_cast<const moveit::core::RobotState>(trajectory_pre_grasp->getLastWayPointPtr());
+
   const moveit::core::RobotStateConstPtr pre_gripper_open_state =
-      std::const_pointer_cast<const moveit::core::RobotState>(trajectory_pre_grasp->getLastWayPointPtr());
+      std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
+
 
   // std::cout << "------------" << std::endl;
   // std::cout << " Pre cartesian 1 (before gripper opens) " << std::endl;
@@ -156,12 +162,20 @@ bool PickPlace::planPick()
 
   trajectories_.emplace_back(std::make_pair(trajectory_open, gripper_planning_group_));
 
+  moveit_cpp_ptr_->execute(gripper_planning_group_, trajectory_open);
+
+
+
   //////////////////////////////////////////////////////////////////////////
   // 3) Move relative to grasp in z-axis of end-effector
   auto trajectory_grasp = std::make_shared<robot_trajectory::RobotTrajectory>(robot_model_ptr_, arm_planning_group_);
 
+  // const moveit::core::RobotStateConstPtr pre_grasp_state =
+  //     std::const_pointer_cast<const moveit::core::RobotState>(trajectory_open->getLastWayPointPtr());
+
   const moveit::core::RobotStateConstPtr pre_grasp_state =
-      std::const_pointer_cast<const moveit::core::RobotState>(trajectory_open->getLastWayPointPtr());
+      std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
+
 
   // std::cout << "------------" << std::endl;
   // std::cout << " Pre cartesian 1 (gripper open) " << std::endl;
@@ -177,6 +191,9 @@ bool PickPlace::planPick()
 
   trajectories_.emplace_back(std::make_pair(trajectory_grasp, arm_planning_group_));
 
+  moveit_cpp_ptr_->execute(arm_planning_group_, trajectory_grasp);
+
+
   //////////////////////////////////////////////////////////////////////////
   // 4) Attach object from scene, disable collisions, and close gripper
   // TODO: add objects to planning scene
@@ -184,8 +201,11 @@ bool PickPlace::planPick()
   auto trajectory_close =
       std::make_shared<robot_trajectory::RobotTrajectory>(robot_model_ptr_, gripper_planning_group_);
 
+  // const moveit::core::RobotStateConstPtr pre_gripper_close_state =
+  //     std::const_pointer_cast<const moveit::core::RobotState>(trajectory_grasp->getLastWayPointPtr());
+
   const moveit::core::RobotStateConstPtr pre_gripper_close_state =
-      std::const_pointer_cast<const moveit::core::RobotState>(trajectory_grasp->getLastWayPointPtr());
+      std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
 
   // std::cout << "------------" << std::endl;
   // std::cout << " Completed cartesian 1 (gripper open) " << std::endl;
@@ -199,13 +219,21 @@ bool PickPlace::planPick()
 
   trajectories_.emplace_back(std::make_pair(trajectory_close, gripper_planning_group_));
 
+
+  moveit_cpp_ptr_->execute(gripper_planning_group_, trajectory_close);
+
+
   //////////////////////////////////////////////////////////////////////////
   // 5) Move relative to grasp in z-axis of root link urdf frame
   auto trajectory_post_grasp =
       std::make_shared<robot_trajectory::RobotTrajectory>(robot_model_ptr_, arm_planning_group_);
 
+  // const moveit::core::RobotStateConstPtr grasp_state =
+  //     std::const_pointer_cast<const moveit::core::RobotState>(trajectory_close->getLastWayPointPtr());
+
   const moveit::core::RobotStateConstPtr grasp_state =
-      std::const_pointer_cast<const moveit::core::RobotState>(trajectory_close->getLastWayPointPtr());
+      std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
+
 
   // std::cout << "------------" << std::endl;
   // std::cout << " Pre cartesian 2 (gripper close) " << std::endl;
@@ -220,6 +248,10 @@ bool PickPlace::planPick()
   ROS_WARN_NAMED(LOGNAME, "Retreat Length of trajectory %lu: ", trajectory_post_grasp->getWayPointCount());
 
   trajectories_.emplace_back(std::make_pair(trajectory_post_grasp, arm_planning_group_));
+
+  moveit_cpp_ptr_->execute(arm_planning_group_, trajectory_post_grasp);
+
+
 
   // Visualize plan
   displayTrajectory();

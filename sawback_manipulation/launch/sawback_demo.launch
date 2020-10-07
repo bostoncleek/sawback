@@ -7,8 +7,8 @@
   <node unless="$(arg fake_execution)" pkg="intera_interface" type="gripper_action_server.py" name="gripper_action_server"/>
 
   <!-- If the joints on ridgeback are required by moveit -->
-  <!-- <node pkg="topic_tools" type="relay" name="cmd_vel_relay"
-        args="/ridgeback/joint_states /robot/joint_states"/> -->
+  <node pkg="topic_tools" type="relay" name="cmd_vel_relay"
+        args="/ridgeback/joint_states /robot/joint_states"/>
 
   <!-- No robot_state_publisher processing the sawback urdf
        it is easiest to publish a static tf between both robots -->

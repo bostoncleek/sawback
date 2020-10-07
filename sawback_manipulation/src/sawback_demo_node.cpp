@@ -76,7 +76,7 @@ int main(int argc, char** argv)
   task->initPose(0.3, 0.3, goal);
   task->planPick();
 
-  task->execute();
+  // task->execute();
 
   ROS_INFO_STREAM_NAMED(LOGNAME, "Shutting down.");
   ros::waitForShutdown();
