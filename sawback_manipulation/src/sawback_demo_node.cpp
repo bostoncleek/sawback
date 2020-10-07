@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 
   const Eigen::Isometry3d goal = Eigen::Translation3d(0.9, 0.0, -0.2) * Eigen::Quaterniond(0.707, 0.0, 0.707, 0.0);
 
-  task->initPose(0.1, 0.2, goal);
+  task->initPose(0.3, 0.3, goal);
   task->planPick();
 
   task->execute();

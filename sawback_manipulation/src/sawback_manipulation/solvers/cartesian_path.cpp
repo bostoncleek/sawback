@@ -22,8 +22,8 @@ namespace solvers
 constexpr char LOGNAME[] = "CartesianPath";
 
 CartesianPath::CartesianPath()
-  : max_step_(0.001)
-  , jump_threshold_(1.5)
+  : max_step_(0.01)
+  , jump_threshold_(0.0)
   , min_fraction_(0.5)
   , max_velocity_scaling_factor_(1.0)
   , max_acceleration_scaling_factor_(1.0)
