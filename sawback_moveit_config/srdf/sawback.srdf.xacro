@@ -16,13 +16,15 @@
     <group name="hand">
       <joint name="right_gripper_l_finger_joint"/>
       <joint name="right_gripper_r_finger_joint"/>
-      <joint name="right_hand"/>
+      <!-- <joint name="right_hand"/> -->
     </group>
     <group_state name="open" group="hand">
       <joint name="right_gripper_l_finger_joint" value="0.0416" />
+      <!-- <joint name="right_gripper_r_finger_joint" value="0.0416" /> -->
     </group_state>
     <group_state name="close" group="hand">
-      <joint name="right_gripper_l_finger_joint" value="0" />
+      <joint name="right_gripper_l_finger_joint" value="0.0" />
+      <!-- <joint name="right_gripper_r_finger_joint" value="0.0" /> -->
     </group_state>
 
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
