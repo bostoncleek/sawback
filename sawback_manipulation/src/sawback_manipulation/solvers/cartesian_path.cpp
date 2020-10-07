@@ -22,9 +22,9 @@ namespace solvers
 constexpr char LOGNAME[] = "CartesianPath";
 
 CartesianPath::CartesianPath()
-  : max_step_(0.01)
+  : max_step_(0.001)
   , jump_threshold_(1.5)
-  , min_fraction_(1.0)
+  , min_fraction_(0.5)
   , max_velocity_scaling_factor_(1.0)
   , max_acceleration_scaling_factor_(1.0)
 {
@@ -51,9 +51,11 @@ bool CartesianPath::plan(moveit::core::RobotStatePtr& robot_start_state_ptr,
   const moveit::core::LinkModel* link_model_ptr = joint_model_group_ptr->getLinkModel(link);
 
   // Call MoveIt's computeCartesianPath()
-  const double achieved_fraction = moveit::core::CartesianInterpolator::computeCartesianPath(
+  const double length_covered = moveit::core::CartesianInterpolator::computeCartesianPath(
       robot_start_state_ptr.get(), joint_model_group_ptr, trajectory, link_model_ptr, direction, global_reference_frame,
       distance, moveit::core::MaxEEFStep(max_step_), moveit::core::JumpThreshold(jump_threshold_));
+
+  const double achieved_fraction = length_covered / distance;
 
   if (trajectory.empty())
   {
