@@ -5,7 +5,7 @@
   <param name="moveit_manage_controllers" value="$(arg moveit_manage_controllers)"/>
 
   <!-- Can disable trajectory scaling by setting to false -->
-  <param name="trajectory_execution/execution_duration_monitoring" value="true"/>
+  <param name="trajectory_execution/execution_duration_monitoring" value="false"/>
 
   <!-- When determining the expected duration of a trajectory, this multiplicative factor is applied to get the allowed duration of execution -->
   <param name="allowed_execution_duration_scaling" value="1.2"/> <!-- default 1.2 -->
