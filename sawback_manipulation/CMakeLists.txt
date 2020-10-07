@@ -12,6 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
+	geometry_msgs
   moveit_ros_perception
   moveit_ros_planning
   moveit_ros_planning_interface
@@ -25,6 +26,7 @@ catkin_package(
  INCLUDE_DIRS include
  LIBRARIES ${PROJECT_NAME}_solvers
  CATKIN_DEPENDS
+ 	geometry_msgs
   moveit_ros_perception
 	moveit_ros_planning
 	moveit_ros_planning_interface
@@ -48,15 +50,26 @@ add_library(${PROJECT_NAME}_solvers
 	src/${PROJECT_NAME}/solvers/cartesian_path.cpp
 )
 
+add_library(${PROJECT_NAME}_tasks
+	src/${PROJECT_NAME}/tasks/pick_place.cpp
+)
+
 # add_dependencies(${PROJECT_NAME}
 # 	${${PROJECT_NAME}_EXPORTED_TARGETS}
 # 	${catkin_EXPORTED_TARGETS}
 # )
 
+target_link_libraries(${PROJECT_NAME}_tasks
+	${catkin_LIBRARIES}
+	${Eigen3_LIBRARIES}
+	${PROJECT_NAME}_solvers
+)
+
 target_link_libraries(${PROJECT_NAME}_solvers
 	${catkin_LIBRARIES}
 	${Eigen3_LIBRARIES}
 )
+
 
 add_executable(sawback_demo src/sawback_demo_node.cpp)
 
@@ -69,6 +82,7 @@ target_link_libraries(sawback_demo
 	${catkin_LIBRARIES}
 	${Eigen3_LIBRARIES}
 	${PROJECT_NAME}_solvers
+	${PROJECT_NAME}_tasks
 )
 
 # Mark executables for installation
@@ -76,7 +90,7 @@ install(TARGETS sawback_demo
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(TARGETS ${PROJECT_NAME}_solvers
+install(TARGETS ${PROJECT_NAME}_solvers ${PROJECT_NAME}_tasks
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
