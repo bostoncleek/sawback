@@ -123,11 +123,6 @@ bool PickPlace::planPick()
   const moveit::core::RobotStateConstPtr robot_start_state =
       std::const_pointer_cast<const moveit::core::RobotState>(robot_start_state_ptr);
 
-  // std::cout << "------------" << std::endl;
-  // std::cout << " Start " << std::endl;
-  // robot_start_state->printStatePositions();
-  // std::cout << "------------" << std::endl;
-
   if (!planTo(trajectory_pre_grasp, robot_start_state, pre_grasp_pose))
   {
     return false;
@@ -149,11 +144,6 @@ bool PickPlace::planPick()
   const moveit::core::RobotStateConstPtr pre_gripper_open_state =
       std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
 
-
-  // std::cout << "------------" << std::endl;
-  // std::cout << " Pre cartesian 1 (before gripper opens) " << std::endl;
-  // pre_gripper_open_state->printStatePositions();
-  // std::cout << "------------" << std::endl;
 
   if (!planGripper(trajectory_open, pre_gripper_open_state, "open"))
   {
@@ -177,15 +167,16 @@ bool PickPlace::planPick()
       std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
 
 
-  // std::cout << "------------" << std::endl;
-  // std::cout << " Pre cartesian 1 (gripper open) " << std::endl;
-  // pre_grasp_state->printStatePositions();
-  // std::cout << "------------" << std::endl;
+  // if (!planRelative(trajectory_grasp, pre_grasp_state, direction, false, pre_distance_))
+  // {
+  //   return false;
+  // }
 
-  if (!planRelative(trajectory_grasp, pre_grasp_state, direction, false, pre_distance_))
+  if (!planTo(trajectory_grasp, pre_grasp_state, grasp_pose))
   {
     return false;
   }
+
 
   ROS_WARN_NAMED(LOGNAME, "Approach Length of trajectory %lu: ", trajectory_grasp->getWayPointCount());
 
@@ -207,10 +198,6 @@ bool PickPlace::planPick()
   const moveit::core::RobotStateConstPtr pre_gripper_close_state =
       std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
 
-  // std::cout << "------------" << std::endl;
-  // std::cout << " Completed cartesian 1 (gripper open) " << std::endl;
-  // pre_gripper_close_state->printStatePositions();
-  // std::cout << "------------" << std::endl;
 
   if (!planGripper(trajectory_close, pre_gripper_close_state, "close"))
   {
@@ -234,16 +221,16 @@ bool PickPlace::planPick()
   const moveit::core::RobotStateConstPtr grasp_state =
       std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
 
+  // if (!planRelative(trajectory_post_grasp, grasp_state, direction, true, post_distance_))
+  // {
+  //   return false;
+  // }
 
-  // std::cout << "------------" << std::endl;
-  // std::cout << " Pre cartesian 2 (gripper close) " << std::endl;
-  // grasp_state->printStatePositions();
-  // std::cout << "------------" << std::endl;
-
-  if (!planRelative(trajectory_post_grasp, grasp_state, direction, true, post_distance_))
+  if (!planTo(trajectory_post_grasp, grasp_state, post_grasp_pose))
   {
     return false;
   }
+
 
   ROS_WARN_NAMED(LOGNAME, "Retreat Length of trajectory %lu: ", trajectory_post_grasp->getWayPointCount());
 
