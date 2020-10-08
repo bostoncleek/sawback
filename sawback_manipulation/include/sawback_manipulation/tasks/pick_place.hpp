@@ -31,9 +31,10 @@ public:
             const std::string& gripper_planning_group, const std::string& eef_link);
 
   // Assume pose in in base frame
-  void initPose(double pre_distance, double post_distance, const Eigen::Isometry3d& pose);
+  void initPick(double pre_distance, double post_distance, const Eigen::Isometry3d& pose);
 
-  // void initPose(double pre_distance, double post_distance, const geometry_msgs::PoseStamped& pose);
+  // Assume pose in in base frame
+  void initPlace(double pre_distance, double post_distance, const Eigen::Isometry3d& pose);
 
   bool planPick();
 
@@ -66,7 +67,6 @@ private:
 
   std::string root_link_;      // root link in urdf
   std::string arm_root_link_;  // arm root link in urdf
-  // std::string action_;  // pick or place action
 
   moveit::core::RobotModelConstPtr robot_model_ptr_;
   moveit::core::JointModelGroupConstPtr joint_model_group_ptr_;  // only for arm
@@ -76,13 +76,13 @@ private:
   sawback_manipulation::solvers::CartesianPathUniquePtr cartesian_path_ptr_;
   std::unique_ptr<moveit_visual_tools::MoveItVisualTools> visual_tools_ptr_;
 
-  // const moveit::core::JointModelGroup* joint_model_group_ptr_;
+  double pre_distance_pick_;     // offset distance to pick pose
+  double post_distance_pick_;    // offset distance from pick pose
+  Eigen::Isometry3d pick_pose_;  // pick pose
 
-  double pre_distance_;   // offset distance to pose
-  double post_distance_;  // offset distance from pose
-  // std::string pose_reference_frame_;  // frame of reference for pick or place
-  Eigen::Isometry3d pose_;  // pick or place pose
-  // geometry_msgs::PoseStamped pose_;
+  double pre_distance_place_;     // offset distance to place pose
+  double post_distance_place_;    // offset distance from place pose
+  Eigen::Isometry3d place_pose_;  // place pose
 
   Eigen::Isometry3d text_pose_;  // for rviz tools
 };
