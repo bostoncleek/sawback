@@ -77,6 +77,10 @@ bool PickPlace::planPick()
   // clear previous trajectory
   trajectories_.clear();
 
+  // planning scene monitor used for collision detection in cartesian planner
+  const planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor_ptr =
+      moveit_cpp_ptr_->getPlanningSceneMonitor();
+
   // Compose all the frame transformations
   // Move in z-axis for cartesian motion but frame may change
   Eigen::Vector3d direction(0.0, 0.0, 1.0);
@@ -162,7 +166,7 @@ bool PickPlace::planPick()
   const moveit::core::RobotStateConstPtr pre_grasp_state =
       std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
 
-  if (!planRelative(trajectory_grasp, pre_grasp_state, direction, false, pre_distance_pick_))
+  if (!planRelative(trajectory_grasp, pre_grasp_state, planning_scene_monitor_ptr, direction, false, pre_distance_pick_))
   {
     return false;
   }
@@ -211,7 +215,8 @@ bool PickPlace::planPick()
   const moveit::core::RobotStateConstPtr grasp_state =
       std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
 
-  if (!planRelative(trajectory_post_grasp, grasp_state, direction, true, post_distance_pick_))
+  if (!planRelative(trajectory_post_grasp, grasp_state, planning_scene_monitor_ptr, direction, true,
+                    post_distance_pick_))
   {
     return false;
   }
@@ -239,6 +244,10 @@ bool PickPlace::planPlace()
 
   // clear previous trajectory
   trajectories_.clear();
+
+  // planning scene monitor used for collision detection in cartesian planner
+  const planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor_ptr =
+      moveit_cpp_ptr_->getPlanningSceneMonitor();
 
   // Compose all the frame transformations
   // Move in negative z-axis for cartesian motion but frame may change
@@ -304,7 +313,7 @@ bool PickPlace::planPlace()
   const moveit::core::RobotStateConstPtr pre_place_state =
       std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
 
-  if (!planRelative(trajectory_place, pre_place_state, direction, true, pre_distance_place_))
+  if (!planRelative(trajectory_place, pre_place_state, planning_scene_monitor_ptr, direction, true, pre_distance_place_))
   {
     return false;
   }
@@ -352,7 +361,8 @@ bool PickPlace::planPlace()
   const moveit::core::RobotStateConstPtr place_state =
       std::const_pointer_cast<const moveit::core::RobotState>(moveit_cpp_ptr_->getCurrentState());
 
-  if (!planRelative(trajectory_post_place, place_state, direction, false, post_distance_place_))
+  if (!planRelative(trajectory_post_place, place_state, planning_scene_monitor_ptr, direction, false,
+                    post_distance_place_))
   {
     return false;
   }
@@ -449,13 +459,14 @@ bool PickPlace::planTo(robot_trajectory::RobotTrajectoryPtr& result,
 }
 
 bool PickPlace::planRelative(robot_trajectory::RobotTrajectoryPtr& result,
-                             const moveit::core::RobotStateConstPtr& start_state, const Eigen::Vector3d& direction,
-                             bool root_frame, double distance)
+                             const moveit::core::RobotStateConstPtr& start_state,
+                             const planning_scene_monitor::PlanningSceneMonitorPtr& planning_scene_monitor_ptr,
+                             const Eigen::Vector3d& direction, bool root_frame, double distance)
 {
   auto robot_start_state_ptr = std::make_shared<moveit::core::RobotState>(*start_state.get());
 
-  if (!cartesian_path_ptr_->plan(robot_start_state_ptr, result, joint_model_group_ptr_.get(), eef_link_, direction,
-                                 root_frame, distance))
+  if (!cartesian_path_ptr_->plan(robot_start_state_ptr, result, planning_scene_monitor_ptr,
+                                 joint_model_group_ptr_.get(), eef_link_, direction, root_frame, distance))
   {
     ROS_ERROR_NAMED(LOGNAME, "Cartesian planning failed");
     return false;

@@ -51,6 +51,7 @@ private:
               const Eigen::Isometry3d& goal_pose);
 
   bool planRelative(robot_trajectory::RobotTrajectoryPtr& result, const moveit::core::RobotStateConstPtr& start_state,
+                    const planning_scene_monitor::PlanningSceneMonitorPtr& planning_scene_monitor_ptr,
                     const Eigen::Vector3d& direction, bool root_frame, double distance);
 
   bool planGripper(robot_trajectory::RobotTrajectoryPtr& result, const moveit::core::RobotStateConstPtr& start_state,
