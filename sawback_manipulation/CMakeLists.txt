@@ -21,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(Eigen3 REQUIRED)
+find_package(Boost REQUIRED)
 
 catkin_package(
  INCLUDE_DIRS include
@@ -34,10 +35,12 @@ catkin_package(
 	roscpp
  DEPENDS
  	EIGEN3
+	Boost
 )
 
 include_directories(
 	SYSTEM
+	${Boost_INCLUDE_DIR}
   ${EIGEN3_INCLUDE_DIRS}
 )
 
@@ -67,6 +70,7 @@ target_link_libraries(${PROJECT_NAME}_tasks
 
 target_link_libraries(${PROJECT_NAME}_solvers
 	${catkin_LIBRARIES}
+	${Boost_LIBRARIES}
 	${Eigen3_LIBRARIES}
 )
 
