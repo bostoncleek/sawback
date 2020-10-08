@@ -12,6 +12,9 @@
 #include <moveit/robot_state/robot_state.h>
 #include <moveit/robot_trajectory/robot_trajectory.h>
 #include <moveit/macros/class_forward.h>
+#include <moveit/planning_scene/planning_scene.h>
+#include <moveit/planning_scene_monitor/planning_scene_monitor.h>
+// #include <moveit/kinematic_constraints/kinematic_constraint.h>
 
 #include <Eigen/Core>
 
@@ -53,8 +56,13 @@ public:
    * @details Uses MoveIt's computeCartesianPath() to plan a path between two states
    */
   bool plan(moveit::core::RobotStatePtr& robot_start_state_ptr, robot_trajectory::RobotTrajectoryPtr& result,
+            const planning_scene_monitor::PlanningSceneMonitorPtr& planning_scene_monitor_ptr,
             const moveit::core::JointModelGroup* joint_model_group_ptr, const std::string& link,
             const Eigen::Vector3d& direction, bool global_reference_frame, double distance);
+
+private:
+  bool isStateValid(const planning_scene::PlanningScene* planning_scene, moveit::core::RobotState* robot_state,
+                    const moveit::core::JointModelGroup* joint_model_group, const double* joint_positions);
 
 private:
   double max_step_;                         // max step size in path for translation
