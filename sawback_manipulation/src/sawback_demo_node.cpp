@@ -70,8 +70,8 @@ int main(int argc, char** argv)
   // const moveit_msgs::CollisionObject box = createObject();
 
   // starting configuration
-  const double initial_joints[] = { 0.9389267787249193,  -0.2050500749605062, -1.0421734917046992, 1.4588063551704888,
-                                    -1.8597856835303392, -1.0772340009395818, -0.22431043800663522 };
+  const double initial_joints[] = { 0.136716796875, -1.345919921875,  -0.3328642578125, 2.0867880859375,
+                                    -0.19401171875, -0.8204111328125, -1.0447021484375 };
 
   // move to starting configuration
   const moveit::core::RobotModelConstPtr robot_model =
@@ -79,12 +79,10 @@ int main(int argc, char** argv)
 
   moveit::core::RobotStatePtr robot_state_ptr = make_shared<moveit::core::RobotState>(robot_model);
 
-  const moveit::core::JointModelGroup* joint_model_group_ptr = robot_state_ptr->getJointModelGroup("right_arm");
-
   // Set joint angles to positions from IK
-  robot_state_ptr->setJointGroupPositions(joint_model_group_ptr, initial_joints);
+  robot_state_ptr->setJointGroupPositions("right_arm", initial_joints);
   // Update all the transforms
-  robot_state_ptr->update(initial_joints);
+  robot_state_ptr->update();
 
   planning_component_ptr->setStartStateToCurrentState();
   planning_component_ptr->setGoal(const_cast<const robot_state::RobotState&>(*robot_state_ptr.get()));
@@ -119,8 +117,8 @@ int main(int argc, char** argv)
   task->initPick(0.15, 0.15, goal);
   task->planPick();
 
-  // task->initPlace(0.15, 0.15, goal);
-  // task->planPlace();
+  task->initPlace(0.15, 0.15, goal);
+  task->planPlace();
 
   // task->execute();
 
