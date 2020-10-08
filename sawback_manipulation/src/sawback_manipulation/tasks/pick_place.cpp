@@ -157,7 +157,6 @@ bool PickPlace::planPick()
   moveit_cpp_ptr_->execute(gripper_planning_group_, trajectory_open);
   // ros::Duration(0.5).sleep();
 
-
   //////////////////////////////////////////////////////////////////////////
   // 3) Move relative to grasp in z-axis of end-effector
   auto trajectory_grasp = std::make_shared<robot_trajectory::RobotTrajectory>(robot_model_ptr_, arm_planning_group_);
@@ -206,7 +205,6 @@ bool PickPlace::planPick()
 
   moveit_cpp_ptr_->execute(gripper_planning_group_, trajectory_close);
   // ros::Duration(0.5).sleep();
-
 
   //////////////////////////////////////////////////////////////////////////
   // 5) Move relative to grasp in z-axis of root link urdf frame
@@ -354,7 +352,6 @@ bool PickPlace::planPlace()
 
   moveit_cpp_ptr_->execute(gripper_planning_group_, trajectory_open);
   // ros::Duration(0.5).sleep();
-
 
   //////////////////////////////////////////////////////////////////////////
   // 4) Move relative to place in negative z-axis of end-effector

@@ -112,7 +112,7 @@ bool CartesianPath::isStateValid(const planning_scene::PlanningScene* planning_s
   robot_state->update();
 
   return (!planning_scene->isStateColliding(const_cast<const robot_state::RobotState&>(*robot_state),
-                                                               joint_model_group->getName()));
+                                            joint_model_group->getName()));
 
   return true;
 }
