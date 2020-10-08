@@ -66,18 +66,25 @@ int main(int argc, char** argv)
   // const moveit_msgs::CollisionObject box = createObject();
 
   auto task =
-      std::make_unique<sawback_manipulation::tasks::PickPlace>(moveit_cpp_ptr, "right_arm", "hand", "right_hand");
+      std::make_unique<sawback_manipulation::tasks::PickPlace>(moveit_cpp_ptr, "right_arm", "hand", "right_gripper_tip");
 
   // const Eigen::Isometry3d goal =
   //     Eigen::Translation3d(0.7, 0.0303, 0.6069) * Eigen::Quaterniond(0.696, 0.123, 0.696, 0.123);
 
-  const Eigen::Isometry3d goal = Eigen::Translation3d(0.9, 0.0, -0.2) * Eigen::Quaterniond(0.707, 0.0, 0.707, 0.0);
 
-  task->initPick(0.3, 0.3, goal);
+  const double roll = 0.0, pitch = 1.5708*2.0, yaw = 1.5708*2.0;
+  const Eigen::Quaterniond quat = Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX())
+                                * Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY())
+                                * Eigen::AngleAxisd(yaw,  Eigen::Vector3d::UnitZ());
+
+
+  const Eigen::Isometry3d goal = Eigen::Translation3d(0.8, 0.1, -0.25) * quat;
+
+  task->initPick(0.15, 0.15, goal);
   task->planPick();
 
-  task->initPlace(0.3, 0.3, goal);
-  task->planPlace();
+  // task->initPlace(0.15, 0.15, goal);
+  // task->planPlace();
 
   // task->execute();
 

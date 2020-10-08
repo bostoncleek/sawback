@@ -111,15 +111,8 @@ bool CartesianPath::isStateValid(const planning_scene::PlanningScene* planning_s
   // Update all the transforms
   robot_state->update();
 
-  return (!planning_scene || !planning_scene->isStateColliding(const_cast<const robot_state::RobotState&>(*robot_state),
+  return (!planning_scene || planning_scene->isStateColliding(const_cast<const robot_state::RobotState&>(*robot_state),
                                                                joint_model_group->getName()));
-
-  // return (!planning_scene || !planning_scene->isStateColliding(*state, group->getName())) &&
-  //        (!constraint_set || constraint_set->decide(*state).satisfied);
-  //
-  //
-  //    		return !sandbox_scene->isStateColliding(const_cast<const robot_state::RobotState&>(*state), jmg->getName())
-  //    && 		       kcs.decide(*state).satisfied
 
   return true;
 }

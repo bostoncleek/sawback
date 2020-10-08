@@ -155,6 +155,8 @@ bool PickPlace::planPick()
   trajectories_.emplace_back(std::make_pair(trajectory_open, gripper_planning_group_));
 
   moveit_cpp_ptr_->execute(gripper_planning_group_, trajectory_open);
+  // ros::Duration(0.5).sleep();
+
 
   //////////////////////////////////////////////////////////////////////////
   // 3) Move relative to grasp in z-axis of end-effector
@@ -203,6 +205,8 @@ bool PickPlace::planPick()
   trajectories_.emplace_back(std::make_pair(trajectory_close, gripper_planning_group_));
 
   moveit_cpp_ptr_->execute(gripper_planning_group_, trajectory_close);
+  // ros::Duration(0.5).sleep();
+
 
   //////////////////////////////////////////////////////////////////////////
   // 5) Move relative to grasp in z-axis of root link urdf frame
@@ -349,6 +353,8 @@ bool PickPlace::planPlace()
   trajectories_.emplace_back(std::make_pair(trajectory_open, gripper_planning_group_));
 
   moveit_cpp_ptr_->execute(gripper_planning_group_, trajectory_open);
+  // ros::Duration(0.5).sleep();
+
 
   //////////////////////////////////////////////////////////////////////////
   // 4) Move relative to place in negative z-axis of end-effector
