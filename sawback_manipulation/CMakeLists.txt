@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(sawback_manipulation)
 
 # add compile options
-add_compile_options(-Wall -Wextra -Wno-psabi)
+add_compile_options(-Wall -Wextra)
 
 # Compile as C++20
 set(CMAKE_CXX_STANDARD 20)
@@ -18,10 +18,13 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_ros_planning_interface
   moveit_visual_tools
   roscpp
+	rosparam_shortcuts
+	sensor_msgs
 )
 
-find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(PCL 1.10 REQUIRED)
 
 catkin_package(
  INCLUDE_DIRS include
@@ -33,20 +36,27 @@ catkin_package(
 	moveit_ros_planning_interface
 	moveit_visual_tools
 	roscpp
+	sensor_msgs
  DEPENDS
+ 	Boost
  	EIGEN3
-	Boost
+	PCL
 )
 
 include_directories(
 	SYSTEM
 	${Boost_INCLUDE_DIR}
   ${EIGEN3_INCLUDE_DIRS}
+	${PCL_INCLUDE_DIRS}
 )
 
 include_directories(
 include
   ${catkin_INCLUDE_DIRS}
+)
+
+add_library(${PROJECT_NAME}_perception
+	src/${PROJECT_NAME}/perception/cloud_processing.cpp
 )
 
 add_library(${PROJECT_NAME}_solvers
@@ -62,6 +72,11 @@ add_library(${PROJECT_NAME}_tasks
 # 	${catkin_EXPORTED_TARGETS}
 # )
 
+target_link_libraries(${PROJECT_NAME}_perception
+	${catkin_LIBRARIES}
+	${PCL_LIBRARIES}
+)
+
 target_link_libraries(${PROJECT_NAME}_tasks
 	${catkin_LIBRARIES}
 	${Eigen3_LIBRARIES}
@@ -75,11 +90,28 @@ target_link_libraries(${PROJECT_NAME}_solvers
 )
 
 
+add_executable(grasp_detection
+	src/grasp_detection_node.cpp
+	src/${PROJECT_NAME}/grasp_detection.cpp
+)
+
 add_executable(sawback_demo src/sawback_demo_node.cpp)
+
+add_dependencies(grasp_detection
+	${${PROJECT_NAME}_EXPORTED_TARGETS}
+	${catkin_EXPORTED_TARGETS}
+)
 
 add_dependencies(sawback_demo
 	${${PROJECT_NAME}_EXPORTED_TARGETS}
 	${catkin_EXPORTED_TARGETS}
+)
+
+target_link_libraries(grasp_detection
+	${catkin_LIBRARIES}
+	${Eigen3_LIBRARIES}
+	${PCL_LIBRARIES}
+	${PROJECT_NAME}_perception	
 )
 
 target_link_libraries(sawback_demo
@@ -90,11 +122,11 @@ target_link_libraries(sawback_demo
 )
 
 # Mark executables for installation
-install(TARGETS sawback_demo
+install(TARGETS grasp_detection sawback_demo
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(TARGETS ${PROJECT_NAME}_solvers ${PROJECT_NAME}_tasks
+install(TARGETS ${PROJECT_NAME}_perception ${PROJECT_NAME}_solvers ${PROJECT_NAME}_tasks
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
