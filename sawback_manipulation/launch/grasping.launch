@@ -1,6 +1,6 @@
 <launch>
   <node pkg="sawback_manipulation" type="grasp_detection" name="grasp_detection" output="screen">
-    <remap from="cloud" to="/ridgeback/bumblebee/pointcloud2"/>
+    <remap from="cloud" to="/ridgeback/bumblebee/points2"/>
     <remap from="filtered_cloud" to="/ridgeback/grasps/filtered_cloud"/>
 
     <param name="remove_ground" value="false"/>
