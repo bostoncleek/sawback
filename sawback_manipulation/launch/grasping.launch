@@ -6,7 +6,12 @@
     <param name="remove_ground" value="false"/>
     <param name="cartesian_limits" value="true"/>
 
-    <rosparam param="xyz_lower_limits">[0.0, 0.0, 0.0]</rosparam>
-    <rosparam param="xyz_upper_limits">[0.0, 0.0, 0.0]</rosparam>
+    <rosparam param="xyz_lower_limits">[-5.0, -5.0, 0.0]</rosparam>
+    <rosparam param="xyz_upper_limits">[5.0, 5.0, 0.80]</rosparam>
+  </node>
+
+
+  <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"
+          args="-d $(find sawback_manipulation)/config/sawback_grasps.rviz" output="screen">
   </node>
 </launch>
