@@ -7,8 +7,12 @@
 
 #pragma once
 
+#include <string>
+
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
+
+#include <Eigen/Geometry>
 
 namespace sawback_manipulation
 {
@@ -29,8 +33,15 @@ private:
   ros::Subscriber cloud_sub_;  // point cloud subscriber
   ros::Publisher cloud_pub_;   // publishes the point cloud saved
 
+  std::string filtered_cloud_frame_; // frame of filtered cloud
+
   bool remove_ground_;      // specify if to remove table points
   bool cartesian_limits_;  // specify if to remove points outside limits
+
+  Eigen::Matrix4f transform_base_optical_;
+
+  Eigen::Isometry3d transfrom_base_camera_; // transform from robot arm base to camera origin
+  Eigen::Isometry3d transfrom_camera_optical_; // transform from camera origin to camera optical link
 
   std::vector<double> xyz_lower_limits_;  // lower limits on point cloud
   std::vector<double> xyz_upper_limits_;  // upper limits on point cloud

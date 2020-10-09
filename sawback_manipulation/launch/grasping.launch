@@ -4,8 +4,10 @@
     <remap from="filtered_cloud" to="/ridgeback/grasps/filtered_cloud"/>
 
     <param name="remove_ground" value="false"/>
-    <param name="cartesian_limits" value="true"/>
+    <param name="cartesian_limits" value="false"/>
 
+    <rosparam param="transfrom_base_camera">[0.0, 0.0, 0.0, 0.707, 0.0, 0.707, 0.0]</rosparam>
+    <rosparam param="transfrom_camera_optical">[0.01, 0.0, 0.0, 0.500, -0.500, -0.500, -0.500]</rosparam>
     <rosparam param="xyz_lower_limits">[-5.0, -5.0, 0.0]</rosparam>
     <rosparam param="xyz_upper_limits">[5.0, 5.0, 0.80]</rosparam>
   </node>
