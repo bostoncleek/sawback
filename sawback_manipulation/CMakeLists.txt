@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_ros_planning
   moveit_ros_planning_interface
   moveit_visual_tools
+	pcl_ros
   roscpp
 	rosparam_shortcuts
 	sensor_msgs
@@ -28,7 +29,10 @@ find_package(PCL 1.10 REQUIRED)
 
 catkin_package(
  INCLUDE_DIRS include
- LIBRARIES ${PROJECT_NAME}_solvers
+ LIBRARIES
+ 	${PROJECT_NAME}_perception
+	${PROJECT_NAME}_solvers
+	${PROJECT_NAME}_tasks
  CATKIN_DEPENDS
  	geometry_msgs
   moveit_ros_perception
@@ -74,6 +78,7 @@ add_library(${PROJECT_NAME}_tasks
 
 target_link_libraries(${PROJECT_NAME}_perception
 	${catkin_LIBRARIES}
+	${Eigen3_LIBRARIES}
 	${PCL_LIBRARIES}
 )
 
@@ -111,7 +116,7 @@ target_link_libraries(grasp_detection
 	${catkin_LIBRARIES}
 	${Eigen3_LIBRARIES}
 	${PCL_LIBRARIES}
-	${PROJECT_NAME}_perception	
+	${PROJECT_NAME}_perception
 )
 
 target_link_libraries(sawback_demo
