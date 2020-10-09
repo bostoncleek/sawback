@@ -29,6 +29,9 @@ private:
   ros::Subscriber cloud_sub_;  // point cloud subscriber
   ros::Publisher cloud_pub_;   // publishes the point cloud saved
 
+  bool remove_ground_;      // specify if to remove table points
+  bool cartesian_limits_;  // specify if to remove points outside limits
+
   std::vector<double> xyz_lower_limits_;  // lower limits on point cloud
   std::vector<double> xyz_upper_limits_;  // upper limits on point cloud
 };

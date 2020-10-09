@@ -32,8 +32,15 @@ void GraspDetection::loadParameters()
   ROS_INFO_NAMED(LOGNAME, "Loading grasp detection parameters");
   ros::NodeHandle pnh("~");
   size_t errors = 0;
-  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "xyz_lower_limits", xyz_lower_limits_);
-  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "xyz_upper_limits", xyz_upper_limits_);
+
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "remove_ground", remove_ground_);
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cartesian_limits", cartesian_limits_);
+
+  if (cartesian_limits_)
+  {
+    errors += !rosparam_shortcuts::get(LOGNAME, pnh, "xyz_lower_limits", xyz_lower_limits_);
+    errors += !rosparam_shortcuts::get(LOGNAME, pnh, "xyz_upper_limits", xyz_upper_limits_);
+  }
   rosparam_shortcuts::shutdownIfError(LOGNAME, errors);
 }
 
@@ -50,7 +57,16 @@ void GraspDetection::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg
   pcl::fromROSMsg(*msg.get(), *cloud.get());
 
   // segment object from ground
-  removeGround(cloud);
+  if (remove_ground_)
+  {
+    removeGround(cloud);
+  }
+
+  // remove points out of limits
+  if (cartesian_limits_)
+  {
+    passThroughFilter(xyz_lower_limits_, xyz_upper_limits_, cloud);
+  }
 
   // publish the cloud for visualization and debugging purposes
   if (!cloud->points.empty())
