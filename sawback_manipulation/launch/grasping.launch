@@ -1,0 +1,9 @@
+<launch>
+  <node pkg="sawback_manipulation" type="grasp_detection" name="grasp_detection" output="screen">
+    <remap from="cloud" to="/ridgeback/bumblebee/pointcloud2"/>
+    <remap from="filtered_cloud" to="/ridgeback/grasps/filtered_cloud"/>
+
+    <rosparam param="xyz_lower_limits">[0.0, 0.0, 0.0]</rosparam>
+    <rosparam param="xyz_upper_limits">[0.0, 0.0, 0.0]</rosparam>
+  </node>
+</launch>
