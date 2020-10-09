@@ -22,7 +22,7 @@ using perception::PointCloudRGBA;
 using perception::removeGround;
 using perception::passThroughFilter;
 
-GraspDetection::GraspDetection(const ros::NodeHandle& nh) : nh_(nh), filtered_cloud_frame_("base")
+GraspDetection::GraspDetection(const ros::NodeHandle& nh) : nh_(nh) /*, filtered_cloud_frame_("base")*/
 {
   loadParameters();
   init();
@@ -36,6 +36,9 @@ void GraspDetection::loadParameters()
 
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "remove_ground", remove_ground_);
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cartesian_limits", cartesian_limits_);
+
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "filtered_cloud_frame", filtered_cloud_frame_);
+
 
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "transfrom_base_camera", transfrom_base_camera_);
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "transfrom_camera_optical", transfrom_camera_optical_);
@@ -72,6 +75,7 @@ void GraspDetection::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg
   sensor_msgs::PointCloud2 cloud_msg;
   pcl_ros::transformPointCloud(transform_base_optical_, *msg.get(), cloud_msg);
 
+  cloud_msg.header.frame_id = filtered_cloud_frame_;
   cloud_pub_.publish(cloud_msg);
 
 

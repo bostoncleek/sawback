@@ -33,10 +33,10 @@ private:
   ros::Subscriber cloud_sub_;  // point cloud subscriber
   ros::Publisher cloud_pub_;   // publishes the point cloud saved
 
-  std::string filtered_cloud_frame_; // frame of filtered cloud
-
   bool remove_ground_;      // specify if to remove table points
   bool cartesian_limits_;  // specify if to remove points outside limits
+
+  std::string filtered_cloud_frame_; // frame of filtered cloud
 
   Eigen::Matrix4f transform_base_optical_;
 

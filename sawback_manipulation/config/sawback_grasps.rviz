@@ -207,6 +207,8 @@ Visualization Manager:
         All Enabled: false
         axle_link:
           Value: false
+        base:
+          Value: true
         base_link:
           Value: false
         bb2_mesh:
@@ -313,7 +315,8 @@ Visualization Manager:
                 velodyne_scan:
                   {}
             mount_link:
-              {}
+              base:
+                {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -374,7 +377,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.725306987762451
+      Distance: 4.6468963623046875
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -390,9 +393,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.09539885818958282
+      Pitch: -0.0896010547876358
       Target Frame: <Fixed Frame>
-      Yaw: 3.900395393371582
+      Yaw: 4.625410079956055
     Saved: ~
 Window Geometry:
   Displays:
@@ -411,4 +414,4 @@ Window Geometry:
     collapsed: false
   Width: 1200
   X: 491
-  Y: 43
+  Y: 27
