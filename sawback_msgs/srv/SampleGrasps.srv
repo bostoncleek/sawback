@@ -1,0 +1,3 @@
+# request is empty and response contains the grasp candidate
+---
+geometry_msgs/PoseStamped grasp_candidate
