@@ -5,8 +5,6 @@
  * @brief Grasp detection node using point clouds
  */
 
-#include <ros/ros.h>
-
 #include <sawback_manipulation/grasp_detection.hpp>
 
 int main(int argc, char** argv)
