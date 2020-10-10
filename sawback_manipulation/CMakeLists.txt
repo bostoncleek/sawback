@@ -26,6 +26,22 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Boost REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.10 REQUIRED)
+find_package(OpenCV 4.2 REQUIRED)
+
+find_library(GPD_LIBRARIES NAMES gpd PATHS /usr/local/lib PATH_SUFFIXES lib NO_DEFAULT_PATH)
+if (GPD_LIBRARIES)
+  message(STATUS "Library GPD found in ${GPD_LIBRARIES}")
+else()
+  message(FATAL_ERROR "Library GPD not found")
+endif()
+
+find_path(GPD_INCLUDE_DIRS NAMES gpd PATHS /usr/local/include NO_DEFAULT_PATH)
+if (GPD_INCLUDE_DIRS)
+	message(STATUS "Include directory GPD found in ${GPD_INCLUDE_DIRS}")
+else()
+  message(FATAL_ERROR "Include directory GPD not found")
+endif()
+
 
 catkin_package(
  INCLUDE_DIRS include
@@ -44,6 +60,7 @@ catkin_package(
  DEPENDS
  	Boost
  	EIGEN3
+	OpenCV
 	PCL
 )
 
@@ -51,7 +68,9 @@ include_directories(
 	SYSTEM
 	${Boost_INCLUDE_DIR}
   ${EIGEN3_INCLUDE_DIRS}
+	${GPD_INCLUDE_DIRS}
 	${PCL_INCLUDE_DIRS}
+	${OpenCV_INCLUDE_DIRS}
 )
 
 include_directories(
@@ -102,19 +121,21 @@ add_executable(grasp_detection
 
 add_executable(sawback_demo src/sawback_demo_node.cpp)
 
-add_dependencies(grasp_detection
-	${${PROJECT_NAME}_EXPORTED_TARGETS}
-	${catkin_EXPORTED_TARGETS}
-)
-
-add_dependencies(sawback_demo
-	${${PROJECT_NAME}_EXPORTED_TARGETS}
-	${catkin_EXPORTED_TARGETS}
-)
+# add_dependencies(grasp_detection
+# 	${${PROJECT_NAME}_EXPORTED_TARGETS}
+# 	${catkin_EXPORTED_TARGETS}
+#
+# )
+#
+# add_dependencies(sawback_demo
+# 	${${PROJECT_NAME}_EXPORTED_TARGETS}
+# 	${catkin_EXPORTED_TARGETS}
+# )
 
 target_link_libraries(grasp_detection
 	${catkin_LIBRARIES}
 	${Eigen3_LIBRARIES}
+	${GPD_LIBRARIES}
 	${PCL_LIBRARIES}
 	${PROJECT_NAME}_perception
 )
@@ -131,7 +152,10 @@ install(TARGETS grasp_detection sawback_demo
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(TARGETS ${PROJECT_NAME}_perception ${PROJECT_NAME}_solvers ${PROJECT_NAME}_tasks
+install(TARGETS
+ 		${PROJECT_NAME}_perception
+		${PROJECT_NAME}_solvers
+		${PROJECT_NAME}_tasks
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
