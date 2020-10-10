@@ -13,6 +13,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
 	geometry_msgs
+	moveit_core
   moveit_ros_perception
   moveit_ros_planning
   moveit_ros_planning_interface
@@ -20,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 	pcl_ros
   roscpp
 	rosparam_shortcuts
+	sawback_msgs
 	sensor_msgs
 )
 
@@ -51,11 +53,11 @@ catkin_package(
 	${PROJECT_NAME}_tasks
  CATKIN_DEPENDS
  	geometry_msgs
-  moveit_ros_perception
-	moveit_ros_planning
+	moveit_core
 	moveit_ros_planning_interface
 	moveit_visual_tools
 	roscpp
+	sawback_msgs
 	sensor_msgs
  DEPENDS
  	Boost
