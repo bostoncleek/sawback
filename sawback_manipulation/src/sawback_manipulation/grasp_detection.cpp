@@ -17,10 +17,10 @@ namespace sawback_manipulation
 {
 constexpr char LOGNAME[] = "Grasp Detection";
 
+using perception::passThroughFilter;
 using perception::PointCloudRGB;
 using perception::PointCloudRGBA;
 using perception::removeGround;
-using perception::passThroughFilter;
 
 GraspDetection::GraspDetection(const ros::NodeHandle& nh) : nh_(nh) /*, filtered_cloud_frame_("base")*/
 {
@@ -38,7 +38,6 @@ void GraspDetection::loadParameters()
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cartesian_limits", cartesian_limits_);
 
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "filtered_cloud_frame", filtered_cloud_frame_);
-
 
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "transfrom_base_camera", transfrom_base_camera_);
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "transfrom_camera_optical", transfrom_camera_optical_);
@@ -58,78 +57,46 @@ void GraspDetection::init()
 
   Eigen::Isometry3d Tbo = transfrom_base_camera_ * transfrom_camera_optical_;
 
-  Eigen::Matrix3f R = Tbo.rotation().cast<float>();
-  Eigen::Vector3f t = Tbo.translation().cast<float>();
-
   transform_base_optical_ = Eigen::Matrix4f::Identity();
-  transform_base_optical_.block<3,3>(0,0) = R;
-  transform_base_optical_.block<3,1>(0,3) = t;
-
-  std::cout << transform_base_optical_ << std::endl;
+  transform_base_optical_.block<3, 3>(0, 0) = Tbo.rotation().cast<float>();
+  transform_base_optical_.block<3, 1>(0, 3) = Tbo.translation().cast<float>();
 }
 
 void GraspDetection::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg)
 {
-  // TODO: convert ConstPtr to Ptr
+  // Transform incoming cloud into base frame
+  sensor_msgs::PointCloud2 transformed_cloud;
+  pcl_ros::transformPointCloud(transform_base_optical_, *msg.get(), transformed_cloud);
 
-  sensor_msgs::PointCloud2 cloud_msg;
-  pcl_ros::transformPointCloud(transform_base_optical_, *msg.get(), cloud_msg);
+  transformed_cloud.header.frame_id = filtered_cloud_frame_;
 
-  cloud_msg.header.frame_id = filtered_cloud_frame_;
-  cloud_pub_.publish(cloud_msg);
+  // convert from ROS msg to a point cloud
+  PointCloudRGB::Ptr cloud(new PointCloudRGB);
+  pcl::fromROSMsg(transformed_cloud, *cloud.get());
 
+  // segment object from ground
+  if (remove_ground_)
+  {
+    removeGround(cloud);
+  }
 
-  // // convert from ROS msg to a point cloud
-  // PointCloudRGB::Ptr cloud(new PointCloudRGB);
-  // pcl::fromROSMsg(*msg.get(), *cloud.get());
-  //
-  //
-  //
-  //
-  // // segment object from ground
-  // if (remove_ground_)
-  // {
-  //   removeGround(cloud);
-  // }
-  //
-  // // remove points out of limits
-  // if (cartesian_limits_)
-  // {
-  //   passThroughFilter(xyz_lower_limits_, xyz_upper_limits_, cloud);
-  // }
-  //
-  // // publish the cloud for visualization and debugging purposes
-  // if (!cloud->points.empty())
-  // {
-  //   sensor_msgs::PointCloud2 cloud_msg;
-  //   pcl::toROSMsg(*cloud.get(), cloud_msg);
-  //   cloud_pub_.publish(cloud_msg);
-  // }
-  // else
-  // {
-  //   ROS_ERROR_NAMED(LOGNAME, "Point cloud is empty");
-  // }
+  // remove points out of limits
+  if (cartesian_limits_)
+  {
+    passThroughFilter(xyz_lower_limits_, xyz_upper_limits_, cloud);
+  }
+
+  // publish the cloud for visualization and debugging purposes
+  if (!cloud->points.empty())
+  {
+    pcl::toROSMsg(*cloud.get(), transformed_cloud);
+    cloud_pub_.publish(transformed_cloud);
+  }
+  else
+  {
+    ROS_ERROR_NAMED(LOGNAME, "Point cloud is empty");
+  }
 }
-
 }  // namespace sawback_manipulation
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //

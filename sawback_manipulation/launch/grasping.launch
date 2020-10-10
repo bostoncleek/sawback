@@ -9,15 +9,18 @@
     <remap from="filtered_cloud" to="/ridgeback/grasps/filtered_cloud"/>
 
     <param name="remove_ground" value="false"/>
-    <param name="cartesian_limits" value="false"/>
+    <param name="cartesian_limits" value="true"/>
 
     <param name="filtered_cloud_frame" value="base"/>
 
-    <rosparam param="transfrom_base_camera">[0.240, 0.001, 0.060, 1.0, 0.0, 0.0, 0.0]</rosparam>
-    <rosparam param="transfrom_camera_optical">[0.01, 0.0, 0.0, 0.500, -0.500, 0.500, -0.500]</rosparam>
+    <!-- sawyer base to bb2 origin [x y z qw qx qy qx]-->
+    <rosparam param="transfrom_base_camera">[0.283, 0.001, 0.045, 0.946, 0.0, 0.326, 0.0]</rosparam>
+    <!-- bb2 origin to left optical link [x y z qw qx qy qx]-->
+    <rosparam param="transfrom_camera_optical">[0.0, 0.06, 0.0, 0.500, -0.500, 0.500, -0.500]</rosparam>
 
-    <rosparam param="xyz_lower_limits">[-5.0, -5.0, 0.0]</rosparam>
-    <rosparam param="xyz_upper_limits">[5.0, 5.0, 0.80]</rosparam>
+    <!-- Limits in frame of base -->
+    <rosparam param="xyz_lower_limits">[0.0, -1.0, -0.29]</rosparam>
+    <rosparam param="xyz_upper_limits">[1.2, 1.0, 0.0]</rosparam>
   </node>
 
   <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"

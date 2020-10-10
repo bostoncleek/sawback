@@ -23,7 +23,7 @@ typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloudRGB;
  * @brief Segments objects from table plane
  * @param [out] cloud - Segemented point cloud XYZRGB
  */
-void removeGround(PointCloudRGB::Ptr cloud);
+void removeGround(PointCloudRGB::Ptr& cloud);
 
 /**
  * @brief Removes points outside the specified cartesian limits

@@ -6,8 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /RobotModel1
-        - /TF1
         - /TF1/Frames1
       Splitter Ratio: 0.5
     Tree Height: 549
@@ -71,6 +69,10 @@ Visualization Manager:
           Show Trail: false
           Value: true
         base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        bb2_left_optical_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -201,68 +203,10 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz/TF
-      Enabled: true
+      Enabled: false
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        axle_link:
-          Value: false
-        base:
-          Value: true
-        base_link:
-          Value: false
-        bb2_mesh:
-          Value: false
-        bb2_optical_link:
-          Value: true
-        bb2_origin:
-          Value: false
-        chassis_link:
-          Value: false
-        controller_enclosure:
-          Value: false
-        front_cover_link:
-          Value: false
-        front_laser:
-          Value: false
-        front_left_wheel_link:
-          Value: false
-        front_lights_link:
-          Value: false
-        front_right_wheel_link:
-          Value: false
-        front_rocker_link:
-          Value: false
-        imu_link:
-          Value: false
-        left_side_cover_link:
-          Value: false
-        mid_mount:
-          Value: false
-        mount_link:
-          Value: false
-        odom:
-          Value: false
-        rear_cover_link:
-          Value: false
-        rear_laser:
-          Value: false
-        rear_left_wheel_link:
-          Value: false
-        rear_lights_link:
-          Value: false
-        rear_right_wheel_link:
-          Value: false
-        rear_rocker_link:
-          Value: false
-        right_side_cover_link:
-          Value: false
-        top_link:
-          Value: false
-        velodyne_mesh:
-          Value: false
-        velodyne_scan:
-          Value: false
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -270,55 +214,9 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        odom:
-          base_link:
-            chassis_link:
-              axle_link:
-                front_rocker_link:
-                  front_left_wheel_link:
-                    {}
-                  front_right_wheel_link:
-                    {}
-                rear_rocker_link:
-                  rear_left_wheel_link:
-                    {}
-                  rear_right_wheel_link:
-                    {}
-              front_cover_link:
-                {}
-              front_laser:
-                {}
-              front_lights_link:
-                {}
-              imu_link:
-                {}
-              left_side_cover_link:
-                {}
-              rear_cover_link:
-                {}
-              rear_laser:
-                {}
-              rear_lights_link:
-                {}
-              right_side_cover_link:
-                {}
-              top_link:
-                {}
-            mid_mount:
-              bb2_mesh:
-                bb2_origin:
-                  bb2_optical_link:
-                    {}
-              controller_enclosure:
-                {}
-              velodyne_mesh:
-                velodyne_scan:
-                  {}
-            mount_link:
-              base:
-                {}
+        {}
       Update Interval: 0
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -377,7 +275,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.6468963623046875
+      Distance: 2.45231556892395
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -385,17 +283,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 1.1909562349319458
-        Y: 0.3386806547641754
-        Z: 0.7514600157737732
+        X: 0.753745436668396
+        Y: 0.39967140555381775
+        Z: 0.432730108499527
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: -0.0896010547876358
+      Pitch: 0.045398954302072525
       Target Frame: <Fixed Frame>
-      Yaw: 4.625410079956055
+      Yaw: 1.9853936433792114
     Saved: ~
 Window Geometry:
   Displays:

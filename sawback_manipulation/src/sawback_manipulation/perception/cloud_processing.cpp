@@ -21,7 +21,7 @@ namespace perception
 {
 constexpr char LOGNAME[] = "Cloud Processing";
 
-void removeGround(PointCloudRGB::Ptr cloud)
+void removeGround(PointCloudRGB::Ptr& cloud)
 {
   // SAC segmentor without normals
   pcl::SACSegmentation<pcl::PointXYZRGB> segmentor;
