@@ -92,12 +92,15 @@ bool PickPlace::planPick()
   // Transform from urdf root link to end effect
   const Eigen::Isometry3d start_pose = robot_start_state_ptr->getGlobalLinkTransform(eef_link_);
 
+  // Transform from grasp pose sampler to eef
+  const Eigen::Isometry3d Tge = Eigen::Translation3d(0.0, 0.0, 0.0) * Eigen::Quaterniond(0.707, 0.0, 0.707, 0.0);
+
   // Inverse of the transform from the pre grasp to the grasp in the frame of the gripper
   const Eigen::Isometry3d Tpre_grasp_inv =
       Eigen::Translation3d(0.0, 0.0, -pre_distance_pick_) * Eigen::Quaterniond(1.0, 0.0, 0.0, 0.0);
 
   // Transform from urdf root link to grasp
-  const Eigen::Isometry3d grasp_pose = Troot_base * pick_pose_;
+  const Eigen::Isometry3d grasp_pose = Troot_base * pick_pose_ * Tge;
 
   // Transform from urdf root link to the pre-grasp
   const Eigen::Isometry3d pre_grasp_pose = grasp_pose * Tpre_grasp_inv;
@@ -262,8 +265,11 @@ bool PickPlace::planPlace()
   // Transform from urdf root link to end effect
   const Eigen::Isometry3d start_pose = robot_start_state_ptr->getGlobalLinkTransform(eef_link_);
 
+  // Transform from grasp pose sampler to eef
+  const Eigen::Isometry3d Tge = Eigen::Translation3d(0.0, 0.0, 0.0) * Eigen::Quaterniond(0.707, 0.0, 0.707, 0.0);
+
   // Transform from urdf root link to place
-  const Eigen::Isometry3d place_pose = Troot_base * place_pose_;
+  const Eigen::Isometry3d place_pose = Troot_base * place_pose_ * Tge;
 
   // Inverse of the transform from the pre place to place pose in the root frame
   Eigen::Isometry3d Tpre_place_inv =
@@ -447,8 +453,13 @@ bool PickPlace::planTo(robot_trajectory::RobotTrajectoryPtr& result,
   // Plan from current state
   planning_component_arm_ptr_->setStartState(*start_state.get());
 
-  // Plan
+  // moveit::core::RobotState goal_state(robot_model_ptr_);
+  // goal_state.setFromIK(joint_model_group_ptr_.get(), target.pose);
+  //
+  // // Plan
   planning_component_arm_ptr_->setGoal(target, eef_link_);
+  // planning_component_arm_ptr_->setGoal(goal_state);
+
   const moveit::planning_interface::PlanningComponent::PlanSolution plan = planning_component_arm_ptr_->plan();
 
   if (plan.error_code == moveit_msgs::MoveItErrorCodes::SUCCESS)
