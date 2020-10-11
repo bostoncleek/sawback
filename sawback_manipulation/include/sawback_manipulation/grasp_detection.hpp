@@ -12,6 +12,7 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <geometry_msgs/PoseStamped.h>
 
 #include <Eigen/Geometry>
 
@@ -38,24 +39,25 @@ private:
 
   void processCloud(PointCloudRGBA::Ptr& grasp_cloud);
 
-  void sampleGrasps(const PointCloudRGBA::Ptr& grasp_cloud);
-
+  bool sampleGrasps(geometry_msgs::PoseStamped& grasp, const PointCloudRGBA::Ptr& grasp_cloud);
 
 private:
   ros::NodeHandle nh_;
-  ros::Subscriber cloud_sub_;     // point cloud subscriber
-  ros::Publisher cloud_pub_;      // publishes the point cloud saved
-  ros::ServiceServer grasp_srv_;  // grasp server
+  ros::Subscriber cloud_sub_;        // point cloud subscriber
+  ros::Publisher cloud_pub_;         // publishes the point cloud saved
+  ros::ServiceServer grasp_server_;  // grasp server
+
+  ros::Publisher pose_pub_;
 
   bool remove_ground_;     // specify if to remove table points
   bool cartesian_limits_;  // specify if to remove points outside limits
 
   std::string filtered_cloud_frame_;  // frame of filtered cloud
-  std::string path_to_gpd_config_;  // path to GPD config file
+  std::string path_to_gpd_config_;    // path to GPD config file
 
   std::vector<double> view_point_;  // origin of the camera
 
-  Eigen::Matrix4f transform_base_optical_; // transform from base to left optical link
+  Eigen::Matrix4f transform_base_optical_;  // transform from base to left optical link
 
   Eigen::Isometry3d transfrom_base_camera_;     // transform from robot arm base to camera origin
   Eigen::Isometry3d transfrom_camera_optical_;  // transform from camera origin to camera optical link

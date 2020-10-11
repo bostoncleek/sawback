@@ -56,7 +56,9 @@ void GraspDetection::init()
 {
   cloud_sub_ = nh_.subscribe("cloud", 1, &GraspDetection::cloudCallback, this);
   cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("filtered_cloud", 1, true);
-  grasp_srv_ = nh_.advertiseService("get_grasp", &GraspDetection::graspCallback, this);
+  grasp_server_ = nh_.advertiseService("get_grasp", &GraspDetection::graspCallback, this);
+
+  pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("gpose", 1, true);
 
   grasp_detector_.reset(new gpd::GraspDetector(path_to_gpd_config_));
 
@@ -77,16 +79,21 @@ bool GraspDetection::graspCallback(sawback_msgs::SampleGrasps::Request&, sawback
   ROS_INFO_NAMED(LOGNAME, "Grasp service active");
 
   PointCloudRGBA::Ptr grasp_cloud(new PointCloudRGBA);
-  processCloud(grasp_cloud);
-  sampleGrasps(grasp_cloud);
+  geometry_msgs::PoseStamped grasp_pose;
 
-  return true;
+  processCloud(grasp_cloud);
+
+  if (sampleGrasps(grasp_pose, grasp_cloud))
+  {
+    res.grasp_candidate = grasp_pose;
+    return true;
+  }
+
+  return false;
 }
 
 void GraspDetection::processCloud(PointCloudRGBA::Ptr& grasp_cloud)
 {
-  ROS_INFO_NAMED(LOGNAME, "cloud");
-
   // Transform incoming cloud into base frame
   sensor_msgs::PointCloud2 transformed_cloud;
   pcl_ros::transformPointCloud(transform_base_optical_, *cloud_msg_.get(), transformed_cloud);
@@ -125,41 +132,66 @@ void GraspDetection::processCloud(PointCloudRGBA::Ptr& grasp_cloud)
   }
 }
 
-
-void GraspDetection::sampleGrasps(const PointCloudRGBA::Ptr& grasp_cloud)
+bool GraspDetection::sampleGrasps(geometry_msgs::PoseStamped& grasp, const PointCloudRGBA::Ptr& grasp_cloud)
 {
   // Construct the cloud camera
   Eigen::Matrix3Xd camera_view_point(3, 1);
   camera_view_point << view_point_.at(0), view_point_.at(1), view_point_.at(2);
   cloud_camera_.reset(new gpd::util::Cloud(grasp_cloud, 0, camera_view_point));
 
-  std::vector<std::unique_ptr<gpd::candidate::Hand>> grasps;  // detect grasp poses
-  grasp_detector_->preprocessPointCloud(*cloud_camera_.get());      // preprocess the point cloud
-  grasps = grasp_detector_->detectGrasps(*cloud_camera_.get());     // detect grasps in the point cloud
+  std::vector<std::unique_ptr<gpd::candidate::Hand>> grasps;     // detect grasp poses
+  grasp_detector_->preprocessPointCloud(*cloud_camera_.get());   // preprocess the point cloud
+  grasps = grasp_detector_->detectGrasps(*cloud_camera_.get());  // detect grasps in the point cloud
 
-  for(const auto& grasp : grasps)
+  if (!grasps.empty())
   {
-    std::cout << "----" << std::endl;
-    std::cout << grasp->getOrientation().col(2) << std::endl;
+    const Eigen::Vector3d position = grasps.at(0)->getPosition();
+    const Eigen::Quaterniond orientation(grasps.at(0)->getOrientation());
+
+    // convert back to PoseStamped
+    grasp.header.frame_id = filtered_cloud_frame_;
+    grasp.pose.position.x = position.x();
+    grasp.pose.position.y = position.y();
+    grasp.pose.position.z = position.z();
+
+    grasp.pose.orientation.w = orientation.w();
+    grasp.pose.orientation.x = orientation.x();
+    grasp.pose.orientation.y = orientation.y();
+    grasp.pose.orientation.z = orientation.z();
+
+    pose_pub_.publish(grasp);
+
+    std::cout << "-------------------------------------------" << std::endl;
+    std::cout << "-------------------------------------------" << std::endl;
+    std::cout << "Position" << std::endl;
+    std::cout << position << std::endl;
+    std::cout << "Orientation" << std::endl;
+    std::cout << orientation.w() << std::endl;
+    std::cout << orientation.x() << std::endl;
+    std::cout << orientation.y() << std::endl;
+    std::cout << orientation.z() << std::endl;
+    std::cout << "Approach" << std::endl;
+    std::cout << grasps.at(0)->getOrientation().col(0) << std::endl;
+    std::cout << "Closing" << std::endl;
+    std::cout << grasps.at(0)->getOrientation().col(1) << std::endl;
+    std::cout << "Axis" << std::endl;
+    std::cout << grasps.at(0)->getOrientation().col(2) << std::endl;
+    std::cout << "-------------------------------------------" << std::endl;
+
+    return true;
   }
 
+  // for(const auto& grasp : grasps)
+  // {
+  //   std::cout << "----" << std::endl;
+  //   // std::cout << grasp->getOrientation().col(0) << std::endl;
+  //   std::cout << grasp->getPosition() << std::endl;
+  // }
+
+  ROS_ERROR_NAMED(LOGNAME, "No grasps detected");
+
+  return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }  // namespace sawback_manipulation
 
