@@ -121,7 +121,7 @@ add_executable(grasp_detection
 	src/${PROJECT_NAME}/grasp_detection.cpp
 )
 
-add_executable(sawback_demo src/sawback_demo_node.cpp)
+add_executable(sawback_pick_place src/sawback_pick_place_node.cpp)
 
 # add_dependencies(grasp_detection
 # 	${${PROJECT_NAME}_EXPORTED_TARGETS}
@@ -142,7 +142,7 @@ target_link_libraries(grasp_detection
 	${PROJECT_NAME}_perception
 )
 
-target_link_libraries(sawback_demo
+target_link_libraries(sawback_pick_place
 	${catkin_LIBRARIES}
 	${Eigen3_LIBRARIES}
 	${PROJECT_NAME}_solvers
@@ -150,7 +150,7 @@ target_link_libraries(sawback_demo
 )
 
 # Mark executables for installation
-install(TARGETS grasp_detection sawback_demo
+install(TARGETS grasp_detection sawback_pick_place
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
