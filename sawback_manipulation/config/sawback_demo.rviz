@@ -8,7 +8,7 @@ Panels:
         - /Status1
         - /PlanningScene1
         - /TF1/Frames1
-      Splitter Ratio: 0.506465494632721
+      Splitter Ratio: 0.5021551847457886
     Tree Height: 478
   - Class: rviz/Selection
     Name: Selection
@@ -28,7 +28,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: PointCloud2
   - Class: rviz_visual_tools/RvizVisualToolsGui
     Name: RvizVisualToolsGui
 Preferences:
@@ -77,13 +77,7 @@ Visualization Manager:
       Marker Topic: /rviz_visual_tools
       Name: MarkerArray
       Namespaces:
-        Grasp: true
-        Path: true
-        Post-grasp: true
-        Pre-grasp: true
-        Sphere: true
-        Start pose: true
-        Text: true
+        {}
       Queue Size: 100
       Value: true
     - Class: moveit_rviz_plugin/PlanningScene
@@ -117,6 +111,10 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
           base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          bb2_left_optical_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -382,10 +380,134 @@ Visualization Manager:
         Show Robot Visual: true
       Value: true
     - Class: rviz/TF
-      Enabled: false
+      Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        axle_link:
+          Value: false
+        base:
+          Value: true
+        base_link:
+          Value: false
+        bb2_left_optical_link:
+          Value: false
+        bb2_mesh:
+          Value: false
+        bb2_optical_link:
+          Value: false
+        bb2_origin:
+          Value: false
+        chassis_link:
+          Value: false
+        controller_box:
+          Value: false
+        controller_enclosure:
+          Value: false
+        front_cover_link:
+          Value: false
+        front_laser:
+          Value: false
+        front_left_wheel_link:
+          Value: false
+        front_lights_link:
+          Value: false
+        front_right_wheel_link:
+          Value: false
+        front_rocker_link:
+          Value: false
+        head:
+          Value: false
+        head_camera:
+          Value: false
+        imu_link:
+          Value: false
+        left_side_cover_link:
+          Value: false
+        mid_mount:
+          Value: false
+        mount_link:
+          Value: false
+        odom:
+          Value: false
+        pedestal:
+          Value: false
+        pedestal_feet:
+          Value: false
+        rear_cover_link:
+          Value: false
+        rear_laser:
+          Value: false
+        rear_left_wheel_link:
+          Value: false
+        rear_lights_link:
+          Value: false
+        rear_right_wheel_link:
+          Value: false
+        rear_rocker_link:
+          Value: false
+        right_arm_base_link:
+          Value: false
+        right_arm_itb:
+          Value: false
+        right_connector_plate_base:
+          Value: false
+        right_connector_plate_mount:
+          Value: false
+        right_electric_gripper_base:
+          Value: false
+        right_gripper_base:
+          Value: false
+        right_gripper_l_finger:
+          Value: false
+        right_gripper_l_finger_tip:
+          Value: false
+        right_gripper_r_finger:
+          Value: false
+        right_gripper_r_finger_tip:
+          Value: false
+        right_gripper_tip:
+          Value: false
+        right_hand:
+          Value: false
+        right_hand_camera:
+          Value: false
+        right_l0:
+          Value: false
+        right_l1:
+          Value: false
+        right_l1_2:
+          Value: false
+        right_l2:
+          Value: false
+        right_l2_2:
+          Value: false
+        right_l3:
+          Value: false
+        right_l4:
+          Value: false
+        right_l4_2:
+          Value: false
+        right_l5:
+          Value: false
+        right_l6:
+          Value: false
+        right_side_cover_link:
+          Value: false
+        right_torso_itb:
+          Value: false
+        right_wrist:
+          Value: false
+        screen:
+          Value: false
+        top_link:
+          Value: false
+        torso:
+          Value: false
+        velodyne_mesh:
+          Value: false
+        velodyne_scan:
+          Value: false
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -393,9 +515,149 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        odom:
+          base_link:
+            chassis_link:
+              axle_link:
+                front_rocker_link:
+                  front_left_wheel_link:
+                    {}
+                  front_right_wheel_link:
+                    {}
+                rear_rocker_link:
+                  rear_left_wheel_link:
+                    {}
+                  rear_right_wheel_link:
+                    {}
+              front_cover_link:
+                {}
+              front_laser:
+                {}
+              front_lights_link:
+                {}
+              imu_link:
+                {}
+              left_side_cover_link:
+                {}
+              rear_cover_link:
+                {}
+              rear_laser:
+                {}
+              rear_lights_link:
+                {}
+              right_side_cover_link:
+                {}
+              top_link:
+                {}
+            mid_mount:
+              bb2_mesh:
+                bb2_origin:
+                  bb2_optical_link:
+                    bb2_left_optical_link:
+                      {}
+              controller_enclosure:
+                {}
+              velodyne_mesh:
+                velodyne_scan:
+                  {}
+            mount_link:
+              base:
+                controller_box:
+                  {}
+                pedestal:
+                  {}
+                pedestal_feet:
+                  {}
+                right_arm_base_link:
+                  right_l0:
+                    head:
+                      head_camera:
+                        {}
+                      screen:
+                        {}
+                    right_l1:
+                      right_l1_2:
+                        {}
+                      right_l2:
+                        right_l2_2:
+                          {}
+                        right_l3:
+                          right_l4:
+                            right_arm_itb:
+                              {}
+                            right_l4_2:
+                              {}
+                            right_l5:
+                              right_hand_camera:
+                                {}
+                              right_l6:
+                                right_hand:
+                                  right_gripper_base:
+                                    right_connector_plate_base:
+                                      right_connector_plate_mount:
+                                        right_electric_gripper_base:
+                                          right_gripper_l_finger:
+                                            right_gripper_l_finger_tip:
+                                              {}
+                                          right_gripper_r_finger:
+                                            right_gripper_r_finger_tip:
+                                              {}
+                                    right_gripper_tip:
+                                      {}
+                              right_wrist:
+                                {}
+                    right_torso_itb:
+                      {}
+                torso:
+                  {}
       Update Interval: 0
-      Value: false
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: RGB8
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic: /ridgeback/grasps/filtered_cloud
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz/Pose
+      Color: 238; 238; 236
+      Enabled: true
+      Head Length: 0.009999999776482582
+      Head Radius: 0.009999999776482582
+      Name: Pose
+      Queue Size: 10
+      Shaft Length: 0.20000000298023224
+      Shaft Radius: 0.004999999888241291
+      Shape: Arrow
+      Topic: /gpose
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -424,7 +686,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.8514010906219482
+      Distance: 2.5438907146453857
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -432,17 +694,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.2479396015405655
-        Y: 0.12832526862621307
-        Z: 0.6765105724334717
+        X: 0.39155852794647217
+        Y: -0.1909993439912796
+        Z: 0.1215229257941246
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.19979773461818695
+      Pitch: 0.43979740142822266
       Target Frame: <Fixed Frame>
-      Yaw: 0.9172935485839844
+      Yaw: 1.5073163509368896
     Saved: ~
 Window Geometry:
   Displays:
@@ -462,5 +724,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1456
-  X: 2384
-  Y: 42
+  X: 420
+  Y: 27
