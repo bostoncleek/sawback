@@ -1,7 +1,13 @@
 <launch>
   <arg name="fake_execution" default="false"/>
 
-  <node pkg="sawback_manipulation" type="sawback_demo" name="sawback_moveitcpp" output="screen"/>
+  <node pkg="sawback_manipulation" type="sawback_pick_place" name="sawback_moveitcpp" output="screen">
+    <param name="xoffset" value="-0.04"/>
+    <param name="yoffset" value="0.0"/>
+    <param name="zoffset" value="-0.04"/>
+  </node>
+
+  <include file="$(find sawback_manipulation)/launch/grasping.launch"/>
 
   <node unless="$(arg fake_execution)" pkg="intera_interface" type="joint_trajectory_action_server.py" name="joint_trajectory_action_server"/>
   <node unless="$(arg fake_execution)" pkg="intera_interface" type="gripper_action_server.py" name="gripper_action_server"/>
