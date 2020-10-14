@@ -6,6 +6,7 @@
  */
 
 #include <ros/console.h>
+#include <eigen_conversions/eigen_msg.h>
 
 #include <sawback_manipulation/tasks/pick_place.hpp>
 
@@ -15,7 +16,7 @@ namespace sawback_manipulation
 {
 namespace tasks
 {
-constexpr char LOGNAME[] = "PickPlace";
+constexpr char LOGNAME[] = "Pick Place";
 
 PickPlace::PickPlace(const moveit::planning_interface::MoveItCppPtr& moveit_cpp, const std::string& arm_planning_group,
                      const std::string& gripper_planning_group, const std::string& eef_link)
@@ -436,30 +437,14 @@ void PickPlace::displayTrajectory()
 bool PickPlace::planTo(robot_trajectory::RobotTrajectoryPtr& result,
                        const moveit::core::RobotStateConstPtr& start_state, const Eigen::Isometry3d& goal_pose)
 {
-  // Convert from Eigen to poseStamped
-  // Extract orientation
-  const Eigen::Quaterniond quat(goal_pose.rotation());
-
+  // Convert from Eigen to pose
   geometry_msgs::PoseStamped target;
   target.header.frame_id = root_link_;
-  target.pose.position.x = goal_pose.translation().x();
-  target.pose.position.y = goal_pose.translation().y();
-  target.pose.position.z = goal_pose.translation().z();
-  target.pose.orientation.w = quat.w();
-  target.pose.orientation.x = quat.x();
-  target.pose.orientation.y = quat.y();
-  target.pose.orientation.z = quat.z();
+  tf::poseEigenToMsg(goal_pose, target.pose);
 
-  // Plan from current state
+  // Plan from start state
   planning_component_arm_ptr_->setStartState(*start_state.get());
-
-  // moveit::core::RobotState goal_state(robot_model_ptr_);
-  // goal_state.setFromIK(joint_model_group_ptr_.get(), target.pose);
-  //
-  // // Plan
   planning_component_arm_ptr_->setGoal(target, eef_link_);
-  // planning_component_arm_ptr_->setGoal(goal_state);
-
   const moveit::planning_interface::PlanningComponent::PlanSolution plan = planning_component_arm_ptr_->plan();
 
   if (plan.error_code == moveit_msgs::MoveItErrorCodes::SUCCESS)
@@ -477,8 +462,8 @@ bool PickPlace::planRelative(robot_trajectory::RobotTrajectoryPtr& result,
                              const planning_scene_monitor::PlanningSceneMonitorPtr& planning_scene_monitor_ptr,
                              const Eigen::Vector3d& direction, bool root_frame, double distance)
 {
+  // Plan from start state
   auto robot_start_state_ptr = std::make_shared<moveit::core::RobotState>(*start_state.get());
-
   if (!cartesian_path_ptr_->plan(robot_start_state_ptr, result, planning_scene_monitor_ptr,
                                  joint_model_group_ptr_.get(), eef_link_, direction, root_frame, distance))
   {
@@ -492,9 +477,9 @@ bool PickPlace::planRelative(robot_trajectory::RobotTrajectoryPtr& result,
 bool PickPlace::planGripper(robot_trajectory::RobotTrajectoryPtr& result,
                             const moveit::core::RobotStateConstPtr& start_state, const std::string& state)
 {
+  // Plan from start state
   planning_component_gripper_ptr_->setStartState(*start_state.get());
   planning_component_gripper_ptr_->setGoal(state);
-
   const moveit::planning_interface::PlanningComponent::PlanSolution plan = planning_component_gripper_ptr_->plan();
 
   if (plan.error_code == moveit_msgs::MoveItErrorCodes::SUCCESS)
