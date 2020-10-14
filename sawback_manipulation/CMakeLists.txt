@@ -12,6 +12,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
+	actionlib
+	eigen_conversions
 	geometry_msgs
 	moveit_core
   moveit_ros_perception
@@ -121,7 +123,10 @@ add_executable(grasp_detection
 	src/${PROJECT_NAME}/grasp_detection.cpp
 )
 
-add_executable(sawback_pick_place src/sawback_pick_place_node.cpp)
+add_executable(sawback_pick_place
+	src/sawback_pick_place_node.cpp
+	src/${PROJECT_NAME}/sawback_pick_place.cpp
+)
 
 # add_dependencies(grasp_detection
 # 	${${PROJECT_NAME}_EXPORTED_TARGETS}

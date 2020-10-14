@@ -9,6 +9,8 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <depend>actionlib</depend>
+  <depend>eigen_conversions</depend>
   <depend>geometry_msgs</depend>
   <depend>moveit_core</depend>
   <depend>moveit_ros_perception</depend>
