@@ -30,7 +30,7 @@ GraspDetection::GraspDetection(const ros::NodeHandle& nh) : nh_(nh)
 
 void GraspDetection::loadParameters()
 {
-  ROS_INFO_NAMED(LOGNAME, "Loading grasp detection parameters");
+  ROS_INFO_NAMED(LOGNAME, "Loading parameters");
   ros::NodeHandle pnh("~");
   size_t errors = 0;
 

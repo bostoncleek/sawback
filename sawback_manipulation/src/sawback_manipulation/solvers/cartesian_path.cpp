@@ -18,7 +18,7 @@ namespace sawback_manipulation
 {
 namespace solvers
 {
-constexpr char LOGNAME[] = "CartesianPath";
+constexpr char LOGNAME[] = "Cartesian Path";
 
 CartesianPath::CartesianPath()
   : max_step_(0.01)
