@@ -1,0 +1,15 @@
+# goal
+# manipulation_task - pick or place
+# pose - either the pick or place pose
+# pre_distance - distance away from pose pre pick/place
+# post_distance - distance away from pose pose pick/place
+string manipulation_task
+geometry_msgs/PoseStamped pose
+float64 pre_distance
+float64 post_distance
+---
+# result
+# status - success or no success
+bool status
+---
+#feedback
