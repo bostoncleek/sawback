@@ -12,7 +12,16 @@
     <group name="right_arm">
       <chain base_link="base" tip_link="right_gripper_tip"/>
     </group>
-
+    <group_state name="ready" group="right_arm">
+      <joint name="right_j0" value="0.136716796875"/>
+      <joint name="right_j1" value="-1.345919921875"/>
+      <joint name="right_j2" value="-0.3328642578125"/>
+      <joint name="right_j3" value="2.0867880859375"/>
+      <joint name="right_j4" value="-0.19401171875"/>
+      <joint name="right_j5" value="-0.8204111328125"/>
+      <joint name="right_j6" value="-1.0447021484375"/>
+    </group_state>
+    
     <group name="hand">
       <joint name="right_gripper_l_finger_joint"/>
       <joint name="right_gripper_r_finger_joint"/>
