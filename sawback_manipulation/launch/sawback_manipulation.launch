@@ -2,18 +2,22 @@
   <arg name="fake_execution" default="false"/>
 
   <node pkg="sawback_manipulation" type="sawback_pick_place" name="sawback_moveitcpp" output="screen">
-    <param name="xoffset" value="-0.04"/>
-    <param name="yoffset" value="0.0"/>
-    <param name="zoffset" value="-0.04"/>
+    <param name="arm_planning_group"          value="right_arm"/>
+    <param name="gripper_planning_group"      value="hand"/>
+    <param name="eef_link"                    value="right_gripper_tip"/>
+    <param name="action_name"                 value="pick_place"/>
+    <param name="x_offset"                    value="-0.04"/>
+    <param name="y_offset"                    value="0.0"/>
+    <param name="z_offset"                    value="-0.04"/>
   </node>
 
-  <include file="$(find sawback_manipulation)/launch/grasping.launch"/>
+  <include unless="$(arg fake_execution)" file="$(find sawback_manipulation)/launch/grasping.launch"/>
 
   <node unless="$(arg fake_execution)" pkg="intera_interface" type="joint_trajectory_action_server.py" name="joint_trajectory_action_server"/>
   <node unless="$(arg fake_execution)" pkg="intera_interface" type="gripper_action_server.py" name="gripper_action_server"/>
 
   <!-- If the joints on ridgeback are required by moveit -->
-  <node pkg="topic_tools" type="relay" name="cmd_vel_relay"
+  <node unless="$(arg fake_execution)" pkg="topic_tools" type="relay" name="cmd_vel_relay"
         args="/ridgeback/joint_states /robot/joint_states"/>
 
   <!-- No robot_state_publisher processing the sawback urdf
