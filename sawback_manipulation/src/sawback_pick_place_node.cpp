@@ -39,7 +39,7 @@ int main(int argc, char** argv)
   /* Otherwise robot with zeros joint_states */
   ros::Duration(1.0).sleep();
 
-  sawback_manipulation::SawbackPickPlace sawback_pick_place(nh);
+  // sawback_manipulation::SawbackPickPlace sawback_pick_place(nh);
 
   // ros::NodeHandle pnh("~");
   // double xoffset = 0.0;
@@ -52,27 +52,24 @@ int main(int argc, char** argv)
   //
   /* Otherwise robot with zeros joint_states */
   // ros::Duration(1.0).sleep();
-  //
-  // ROS_INFO_NAMED(LOGNAME, "Starting...");
-  //
-  // ros::ServiceClient grasp_client = nh.serviceClient<sawback_msgs::SampleGrasps>("get_grasp");
-  // // ros::service::waitForService("/sawback_moveitcpp/get_grasp", -1);
-  //
-  // auto moveit_cpp_ptr = std::make_shared<moveit::planning_interface::MoveItCpp>(nh);
-  // moveit_cpp_ptr->getPlanningSceneMonitor()->providePlanningSceneService();
 
-  // moveit::planning_interface::PlanningComponentPtr planning_component_ptr =
-  //     std::make_shared<moveit::planning_interface::PlanningComponent>("right_arm", moveit_cpp_ptr);
+
+  // ros::ServiceClient grasp_client = nh.serviceClient<sawback_msgs::SampleGrasps>("get_grasp");
+  // ros::service::waitForService("/sawback_moveitcpp/get_grasp", -1);
+
+  auto moveit_cpp_ptr = std::make_shared<moveit::planning_interface::MoveItCpp>(nh);
+  moveit_cpp_ptr->getPlanningSceneMonitor()->providePlanningSceneService();
+
+  moveit::planning_interface::PlanningComponentPtr planning_component_ptr =
+      std::make_shared<moveit::planning_interface::PlanningComponent>("right_arm", moveit_cpp_ptr);
 
   // TODO: add floor and object
   // const moveit_msgs::CollisionObject box = createObject();
 
-  // TODO: place these in srdf
-  // starting configuration
   // const double initial_joints[] = { 0.136716796875, -1.345919921875,  -0.3328642578125, 2.0867880859375,
   //                                   -0.19401171875, -0.8204111328125, -1.0447021484375 };
-  //
-  // // move to starting configuration
+
+  // move to starting configuration
   // const moveit::core::RobotModelConstPtr robot_model =
   //     std::const_pointer_cast<const moveit::core::RobotModel>(moveit_cpp_ptr->getRobotModel());
   //
@@ -83,22 +80,21 @@ int main(int argc, char** argv)
   // // Update all the transforms
   // robot_state_ptr->update();
 
-  // planning_component_ptr->setStartStateToCurrentState();
-  // // planning_component_ptr->setGoal(const_cast<const robot_state::RobotState&>(*robot_state_ptr.get()));
-  // planning_component_ptr->setGoal("test");
-  //
-  // const moveit::planning_interface::PlanningComponent::PlanSolution plan = planning_component_ptr->plan();
-  //
-  // if (plan.error_code == moveit_msgs::MoveItErrorCodes::SUCCESS)
-  // {
-  //   moveit_cpp_ptr->execute("right_arm", plan.trajectory);
-  // }
-  //
-  // else
-  // {
-  //   ROS_INFO_NAMED(LOGNAME, "Failed to move to initial configuration");
-  //   ros::shutdown();
-  // }
+  planning_component_ptr->setStartStateToCurrentState();
+  // planning_component_ptr->setGoal(const_cast<const robot_state::RobotState&>(*robot_state_ptr.get()));
+  planning_component_ptr->setGoal("ready");
+
+  const moveit::planning_interface::PlanningComponent::PlanSolution plan = planning_component_ptr->plan();
+
+  if (plan.error_code == moveit_msgs::MoveItErrorCodes::SUCCESS)
+  {
+    moveit_cpp_ptr->execute("right_arm", plan.trajectory);
+  }
+
+  else
+  {
+    ros::shutdown();
+  }
 
   // Begin manipulation tasks
   // auto task = std::make_unique<sawback_manipulation::tasks::PickPlace>(moveit_cpp_ptr, "right_arm", "hand",
