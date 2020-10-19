@@ -66,23 +66,23 @@ int main(int argc, char** argv)
   // TODO: add floor and object
   // const moveit_msgs::CollisionObject box = createObject();
 
-  const double initial_joints[] = { 0.136716796875, -1.345919921875,  -0.3328642578125, 2.0867880859375,
-                                    -0.19401171875, -0.8204111328125, -1.0447021484375 };
+  // const double initial_joints[] = { 0.136716796875, -1.345919921875,  -0.3328642578125, 2.0867880859375,
+  //                                   -0.19401171875, -0.8204111328125, -1.0447021484375 };
 
   // move to starting configuration
-  const moveit::core::RobotModelConstPtr robot_model =
-      std::const_pointer_cast<const moveit::core::RobotModel>(moveit_cpp_ptr->getRobotModel());
-
-  moveit::core::RobotStatePtr robot_state_ptr = make_shared<moveit::core::RobotState>(robot_model);
-
-  // Set joint angles to positions from IK
-  robot_state_ptr->setJointGroupPositions("right_arm", initial_joints);
-  // Update all the transforms
-  robot_state_ptr->update();
+  // const moveit::core::RobotModelConstPtr robot_model =
+  //     std::const_pointer_cast<const moveit::core::RobotModel>(moveit_cpp_ptr->getRobotModel());
+  //
+  // moveit::core::RobotStatePtr robot_state_ptr = make_shared<moveit::core::RobotState>(robot_model);
+  //
+  // // Set joint angles to positions from IK
+  // robot_state_ptr->setJointGroupPositions("right_arm", initial_joints);
+  // // Update all the transforms
+  // robot_state_ptr->update();
 
   planning_component_ptr->setStartStateToCurrentState();
   // planning_component_ptr->setGoal(const_cast<const robot_state::RobotState&>(*robot_state_ptr.get()));
-  planning_component_ptr->setGoal("test");
+  planning_component_ptr->setGoal("ready");
 
   const moveit::planning_interface::PlanningComponent::PlanSolution plan = planning_component_ptr->plan();
 
