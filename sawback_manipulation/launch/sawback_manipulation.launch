@@ -29,8 +29,8 @@
     <arg name="fake_execution" value="$(arg fake_execution)"/>
   </include>
 
-  <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"
+  <!-- <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"
           args="-d $(find sawback_manipulation)/config/sawback_demo.rviz" output="screen">
     <rosparam command="load" file="$(find sawback_moveit_config)/config/kinematics.yaml"/>
-  </node>
+  </node> -->
 </launch>
