@@ -23,7 +23,7 @@
     cloud (sensor_msgs/PointCloud2) - point cloud used for grasp detection
 
   SERVICES:
-    get_grasp (sawback_msgs/SampleGrasps) - calls GPD alogrithm 
+    get_grasp (sawback_msgs/SampleGrasps) - calls GPD alogrithm
  */
 
 #include <grasp_detection.hpp>
