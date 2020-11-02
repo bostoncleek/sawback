@@ -156,22 +156,22 @@ bool GraspDetection::sampleGrasps(geometry_msgs::PoseStamped& grasp, const Point
 
     pose_pub_.publish(grasp);
 
-    std::cout << "-------------------------------------------" << std::endl;
-    std::cout << "-------------------------------------------" << std::endl;
-    std::cout << "Position" << std::endl;
-    std::cout << position << std::endl;
-    std::cout << "Orientation" << std::endl;
-    std::cout << orientation.w() << std::endl;
-    std::cout << orientation.x() << std::endl;
-    std::cout << orientation.y() << std::endl;
-    std::cout << orientation.z() << std::endl;
-    std::cout << "Approach" << std::endl;
-    std::cout << grasps.at(0)->getOrientation().col(0) << std::endl;
-    std::cout << "Closing" << std::endl;
-    std::cout << grasps.at(0)->getOrientation().col(1) << std::endl;
-    std::cout << "Axis" << std::endl;
-    std::cout << grasps.at(0)->getOrientation().col(2) << std::endl;
-    std::cout << "-------------------------------------------" << std::endl;
+    // std::cout << "-------------------------------------------" << std::endl;
+    // std::cout << "-------------------------------------------" << std::endl;
+    // std::cout << "Position" << std::endl;
+    // std::cout << position << std::endl;
+    // std::cout << "Orientation" << std::endl;
+    // std::cout << orientation.w() << std::endl;
+    // std::cout << orientation.x() << std::endl;
+    // std::cout << orientation.y() << std::endl;
+    // std::cout << orientation.z() << std::endl;
+    // std::cout << "Approach" << std::endl;
+    // std::cout << grasps.at(0)->getOrientation().col(0) << std::endl;
+    // std::cout << "Closing" << std::endl;
+    // std::cout << grasps.at(0)->getOrientation().col(1) << std::endl;
+    // std::cout << "Axis" << std::endl;
+    // std::cout << grasps.at(0)->getOrientation().col(2) << std::endl;
+    // std::cout << "-------------------------------------------" << std::endl;
 
     return true;
   }
@@ -189,5 +189,3 @@ bool GraspDetection::sampleGrasps(geometry_msgs::PoseStamped& grasp, const Point
 }
 
 }  // namespace sawback_manipulation
-
-//
