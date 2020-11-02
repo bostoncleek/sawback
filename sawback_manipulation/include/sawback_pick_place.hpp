@@ -31,13 +31,19 @@ private:
 
   void preemptCallback();
 
+  void pickAction(double pre_distance, double post_distance);
+
+  void placeAction(const geometry_msgs::PoseStamped& place_pose, double pre_distance, double post_distance);
+
+  bool readyPose();
+
 private:
   ros::NodeHandle nh_;                                                       // moveitcpp node handle
   ros::ServiceClient grasp_client_;                                          // grasping client
   moveit::planning_interface::MoveItCppPtr moveit_cpp_ptr_;                  // moveitcpp pointer
   moveit::planning_interface::PlanningComponentPtr planning_component_ptr_;  // planning only for right arm
 
-  std::unique_ptr<PickPlace> task_;                                                // pick and place task
+  std::unique_ptr<PickPlace> task_;                                                       // pick and place task
   std::unique_ptr<actionlib::SimpleActionServer<sawback_msgs::PickPlaceAction>> server_;  // pick and place action server
 
   std::string arm_planning_group_;      // planning group arm name

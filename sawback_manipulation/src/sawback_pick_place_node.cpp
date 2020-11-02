@@ -42,7 +42,7 @@ int main(int argc, char** argv)
   /* Otherwise robot with zeros joint_states */
   ros::Duration(1.0).sleep();
 
-  // sawback_manipulation::SawbackPickPlace sawback_pick_place(nh);
+  sawback_manipulation::SawbackPickPlace sawback_pick_place(nh);
 
   // ros::NodeHandle pnh("~");
   // double xoffset = 0.0;
@@ -53,72 +53,72 @@ int main(int argc, char** argv)
   // rosparam_shortcuts::get(LOGNAME, pnh, "yoffset", yoffset);
   // rosparam_shortcuts::get(LOGNAME, pnh, "zoffset", zoffset);
 
-  ros::ServiceClient grasp_client = nh.serviceClient<sawback_msgs::SampleGrasps>("get_grasp");
-  ros::service::waitForService("/sawback_moveitcpp/get_grasp", -1);
-
-  auto moveit_cpp_ptr = std::make_shared<moveit::planning_interface::MoveItCpp>(nh);
-  moveit_cpp_ptr->getPlanningSceneMonitor()->providePlanningSceneService();
-
-  moveit::planning_interface::PlanningComponentPtr planning_component_ptr =
-      std::make_shared<moveit::planning_interface::PlanningComponent>("right_arm", moveit_cpp_ptr);
-
-  planning_component_ptr->setStartStateToCurrentState();
-  // planning_component_ptr->setGoal(const_cast<const robot_state::RobotState&>(*robot_state_ptr.get()));
-  planning_component_ptr->setGoal("ready");
-
-  const moveit::planning_interface::PlanningComponent::PlanSolution plan1 = planning_component_ptr->plan();
-
-  if (plan1.error_code == moveit_msgs::MoveItErrorCodes::SUCCESS)
-  {
-    moveit_cpp_ptr->execute("right_arm", plan1.trajectory);
-  }
-
-  else
-  {
-    ros::shutdown();
-  }
-
-  // Begin manipulation tasks
-  auto task =
-      std::make_unique<sawback_manipulation::PickPlace>(moveit_cpp_ptr, "right_arm", "hand", "right_gripper_tip");
-
-  // Call grasping pipeline
-  sawback_msgs::SampleGrasps grasp_srv;
-
-  if (!grasp_client.call(grasp_srv))
-  {
-    ROS_ERROR("Failed to call get_grasp service");
-    ros::shutdown();
-  }
-
-  const Eigen::Translation3d position(grasp_srv.response.grasp_candidate.pose.position.x,
-                                      grasp_srv.response.grasp_candidate.pose.position.y,
-                                      grasp_srv.response.grasp_candidate.pose.position.z);
-
-  const Eigen::Quaterniond orientation(grasp_srv.response.grasp_candidate.pose.orientation.w,
-                                       grasp_srv.response.grasp_candidate.pose.orientation.x,
-                                       grasp_srv.response.grasp_candidate.pose.orientation.y,
-                                       grasp_srv.response.grasp_candidate.pose.orientation.z);
-
-  // const Eigen::Translation3d position(0.907281 + xoffset, -0.0134618 + yoffset, -0.193109 + zoffset);
-  // const Eigen::Translation3d position(0.907281, -0.0134618, -0.193109 );
-  // const Eigen::Quaterniond orientation(-0.16374, -0.638497, -0.185033, 0.728885);
-
-  const Eigen::Isometry3d grasp = position * orientation;
-
-  // const double roll = 0.0, pitch = 1.5708 , yaw = 0.0;//1.5708 * 2.0;
-  // const Eigen::Quaterniond quat = Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX()) *
-  //                                 Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
-  //                                 Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ());
+  // ros::ServiceClient grasp_client = nh.serviceClient<sawback_msgs::SampleGrasps>("get_grasp");
+  // ros::service::waitForService("/sawback_moveitcpp/get_grasp", -1);
   //
-  // // const Eigen::Quaterniond quat(1.0, 0.0, 0.0, 0.0);
-  // Eigen::Isometry3d grasp = Eigen::Translation3d(0.8, 0.1, -0.15) * quat;
-
-  task->initPick(0.15, 0.15, grasp);
-  task->pick();
-
-  task->initPlace(0.15, 0.15, grasp);
-  task->place();
+  // auto moveit_cpp_ptr = std::make_shared<moveit::planning_interface::MoveItCpp>(nh);
+  // moveit_cpp_ptr->getPlanningSceneMonitor()->providePlanningSceneService();
+  //
+  // moveit::planning_interface::PlanningComponentPtr planning_component_ptr =
+  //     std::make_shared<moveit::planning_interface::PlanningComponent>("right_arm", moveit_cpp_ptr);
+  //
+  // planning_component_ptr->setStartStateToCurrentState();
+  // // planning_component_ptr->setGoal(const_cast<const robot_state::RobotState&>(*robot_state_ptr.get()));
+  // planning_component_ptr->setGoal("ready");
+  //
+  // const moveit::planning_interface::PlanningComponent::PlanSolution plan1 = planning_component_ptr->plan();
+  //
+  // if (plan1.error_code == moveit_msgs::MoveItErrorCodes::SUCCESS)
+  // {
+  //   moveit_cpp_ptr->execute("right_arm", plan1.trajectory);
+  // }
+  //
+  // else
+  // {
+  //   ros::shutdown();
+  // }
+  //
+  // // Begin manipulation tasks
+  // auto task =
+  //     std::make_unique<sawback_manipulation::PickPlace>(moveit_cpp_ptr, "right_arm", "hand", "right_gripper_tip");
+  //
+  // // Call grasping pipeline
+  // sawback_msgs::SampleGrasps grasp_srv;
+  //
+  // if (!grasp_client.call(grasp_srv))
+  // {
+  //   ROS_ERROR("Failed to call get_grasp service");
+  //   ros::shutdown();
+  // }
+  //
+  // const Eigen::Translation3d position(grasp_srv.response.grasp_candidate.pose.position.x,
+  //                                     grasp_srv.response.grasp_candidate.pose.position.y,
+  //                                     grasp_srv.response.grasp_candidate.pose.position.z);
+  //
+  // const Eigen::Quaterniond orientation(grasp_srv.response.grasp_candidate.pose.orientation.w,
+  //                                      grasp_srv.response.grasp_candidate.pose.orientation.x,
+  //                                      grasp_srv.response.grasp_candidate.pose.orientation.y,
+  //                                      grasp_srv.response.grasp_candidate.pose.orientation.z);
+  //
+  // // const Eigen::Translation3d position(0.907281 + xoffset, -0.0134618 + yoffset, -0.193109 + zoffset);
+  // // const Eigen::Translation3d position(0.907281, -0.0134618, -0.193109 );
+  // // const Eigen::Quaterniond orientation(-0.16374, -0.638497, -0.185033, 0.728885);
+  //
+  // const Eigen::Isometry3d grasp = position * orientation;
+  //
+  // // const double roll = 0.0, pitch = 1.5708 , yaw = 0.0;//1.5708 * 2.0;
+  // // const Eigen::Quaterniond quat = Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX()) *
+  // //                                 Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
+  // //                                 Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ());
+  // //
+  // // // const Eigen::Quaterniond quat(1.0, 0.0, 0.0, 0.0);
+  // // Eigen::Isometry3d grasp = Eigen::Translation3d(0.8, 0.1, -0.15) * quat;
+  //
+  // task->initPick(0.15, 0.15, grasp);
+  // task->pick();
+  //
+  // task->initPlace(0.15, 0.15, grasp);
+  // task->place();
 
   // const Eigen::Quaterniond quat(-0.0336479, 0.677444, -0.0578169, 0.732526);
   // const Eigen::Isometry3d grasp = Eigen::Translation3d(0.747486, 0.101057, 0.724942) * quat;
