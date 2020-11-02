@@ -16,49 +16,105 @@
 
 #include <sawback_manipulation/cartesian_path.hpp>
 
-// #include <Eigen/Core>
-
 namespace sawback_manipulation
 {
 MOVEIT_CLASS_FORWARD(PickPlace)
 
+/** @brief Pick and place pipeline */
 class PickPlace
 {
 public:
+  /**
+   * @brief Constructor
+   * @param moveit_cpp - moveitcpp
+   * @param arm_planning_group - arm planning group name
+   * @param gripper_planning_group - gripper planning group name
+   * @param eef_link - end effector link name
+   */
   PickPlace(const moveit::planning_interface::MoveItCppPtr& moveit_cpp, const std::string& arm_planning_group,
             const std::string& gripper_planning_group, const std::string& eef_link);
 
-  // Assume pose in in base frame
+  /**
+   * @brief Initialize a pick task
+   * @param pre_distance - approach distance from grasp pose
+   * @param post_distance - retreat distance from grasp pose
+   * @param pose - grasp pose in base frame of sawyer
+   * @details Assumes the grasp pose approach direction is the x-axis
+   */
   void initPick(double pre_distance, double post_distance, const Eigen::Isometry3d& pose);
 
-  // Assume pose in in base frame
+  /**
+   * @brief Initialize a place task
+   * @param pre_distance - approach distance from place pose
+   * @param post_distance - retreat distance from place pose
+   * @param pose - place pose in base frame of sawyer
+   * @details Assumes the place pose approach direction is the x-axis
+   */
   void initPlace(double pre_distance, double post_distance, const Eigen::Isometry3d& pose);
 
+  /**
+   * @brief plans and executed the pick task
+   * @return true if planning and execution are successful
+   */
   bool planPick();
 
+  /**
+   * @brief plans and executed the pick task
+   * @return true if planning and execution are successful
+   */
   bool planPlace();
 
-  bool execute();
-
+  /**
+   * @brief Displays frames in base_link frame
+   * @param frames - frame pose and name
+   */
   void displayFrames(const std::vector<std::pair<Eigen::Isometry3d, std::string>>& frames);
 
-  void displayTrajectory();
+  /**
+   * @brief Displays trajectory in base_link frame
+   * @param trajectory - planned trajectory
+   */
+  void displayTrajectory(const robot_trajectory::RobotTrajectoryPtr& trajectory);
 
 private:
+  /**
+   * @brief Plan path to a pose goal
+   * @param result - planned trajectory
+   * @param start_state - robot start state
+   * @param goal_pose - pose goal
+   * @return true if planning is successful
+   */
   bool planTo(robot_trajectory::RobotTrajectoryPtr& result, const moveit::core::RobotStateConstPtr& start_state,
               const Eigen::Isometry3d& goal_pose);
 
+  /**
+   * @brief Cartesian path planning to a pose goal
+   * @param result - planned trajectory
+   * @param start_state - robot start state
+   * @param planning_scene_monitor_ptr - planning scene monitor
+   * @param direction - unit vector direction of travel
+   * @param root_frame - root URDF frame for planning
+   * @param distance - distance to travel in the specified direction
+   * @return true if planning is successful
+   */
   bool planRelative(robot_trajectory::RobotTrajectoryPtr& result, const moveit::core::RobotStateConstPtr& start_state,
                     const planning_scene_monitor::PlanningSceneMonitorPtr& planning_scene_monitor_ptr,
                     const Eigen::Vector3d& direction, bool root_frame, double distance);
 
+  /**
+   * @brief Plan gripper opening and closing path
+   * @param result - planned trajectory
+   * @param start_state - robot start state
+   * @param state - open/close
+   * @return true if planning is successful
+   */
   bool planGripper(robot_trajectory::RobotTrajectoryPtr& result, const moveit::core::RobotStateConstPtr& start_state,
                    const std::string& state);
 
 private:
-  moveit::planning_interface::MoveItCppPtr moveit_cpp_ptr_;
-  moveit::planning_interface::PlanningComponentPtr planning_component_arm_ptr_;
-  moveit::planning_interface::PlanningComponentPtr planning_component_gripper_ptr_;
+  moveit::planning_interface::MoveItCppPtr moveit_cpp_ptr_;                          // moveitcpp
+  moveit::planning_interface::PlanningComponentPtr planning_component_arm_ptr_;      // arm planning component
+  moveit::planning_interface::PlanningComponentPtr planning_component_gripper_ptr_;  // gripper planning component
 
   std::string arm_planning_group_;      // planning group arm name
   std::string gripper_planning_group_;  // planning group gripper name
@@ -70,10 +126,8 @@ private:
   moveit::core::RobotModelConstPtr robot_model_ptr_;
   moveit::core::JointModelGroupConstPtr joint_model_group_ptr_;  // only for arm
 
-  std::vector<std::pair<robot_trajectory::RobotTrajectoryPtr, std::string>> trajectories_;
-
-  sawback_manipulation::CartesianPathUniquePtr cartesian_path_ptr_;
-  std::unique_ptr<moveit_visual_tools::MoveItVisualTools> visual_tools_ptr_;
+  sawback_manipulation::CartesianPathUniquePtr cartesian_path_ptr_;           // cartesian planning warpper
+  std::unique_ptr<moveit_visual_tools::MoveItVisualTools> visual_tools_ptr_;  // visualization
 
   double pre_distance_pick_;     // offset distance to pick pose
   double post_distance_pick_;    // offset distance from pick pose
