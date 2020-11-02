@@ -14,7 +14,6 @@
 #include <moveit/macros/class_forward.h>
 #include <moveit/planning_scene/planning_scene.h>
 #include <moveit/planning_scene_monitor/planning_scene_monitor.h>
-// #include <moveit/kinematic_constraints/kinematic_constraint.h>
 
 #include <Eigen/Core>
 
@@ -59,6 +58,14 @@ public:
             const Eigen::Vector3d& direction, bool global_reference_frame, double distance);
 
 private:
+  /**
+   * @brief Ensures cartesian path if collision free
+   * @param planning_scene - planning scene
+   * @param robot_state[out] - robot state
+   * @param joint_model_group -joint model group
+   * @param joint_positions - joint positions
+   * @return true if the state is collision free
+   */
   bool isStateValid(const planning_scene::PlanningScene* planning_scene, moveit::core::RobotState* robot_state,
                     const moveit::core::JointModelGroup* joint_model_group, const double* joint_positions);
 
