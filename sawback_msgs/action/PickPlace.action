@@ -1,10 +1,10 @@
 # goal
 # manipulation_task - pick or place
-# pose - either the pick or place pose
+# pose - place pose
 # pre_distance - distance away from pose pre pick/place
 # post_distance - distance away from pose pose pick/place
 string manipulation_task
-geometry_msgs/PoseStamped pose
+geometry_msgs/PoseStamped place_pose
 float64 pre_distance
 float64 post_distance
 ---
