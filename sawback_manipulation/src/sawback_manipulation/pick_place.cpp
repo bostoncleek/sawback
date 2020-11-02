@@ -8,13 +8,11 @@
 #include <ros/console.h>
 #include <eigen_conversions/eigen_msg.h>
 
-#include <sawback_manipulation/tasks/pick_place.hpp>
+#include <sawback_manipulation/pick_place.hpp>
 
 #include <Eigen/Geometry>
 
 namespace sawback_manipulation
-{
-namespace tasks
 {
 constexpr char LOGNAME[] = "Pick Place";
 
@@ -40,7 +38,7 @@ PickPlace::PickPlace(const moveit::planning_interface::MoveItCppPtr& moveit_cpp,
   root_link_ = robot_model_ptr_->getRootLinkName();
   ROS_INFO_NAMED(LOGNAME, "URDF root link %s: ", root_link_.c_str());
 
-  cartesian_path_ptr_.reset(new sawback_manipulation::solvers::CartesianPath);
+  cartesian_path_ptr_.reset(new sawback_manipulation::CartesianPath);
 
   // Visualization
   visual_tools_ptr_.reset(new moveit_visual_tools::MoveItVisualTools(root_link_, rviz_visual_tools::RVIZ_MARKER_TOPIC,
@@ -491,6 +489,4 @@ bool PickPlace::planGripper(robot_trajectory::RobotTrajectoryPtr& result,
   ROS_ERROR_NAMED(LOGNAME, "Planning failed");
   return false;
 }
-
-}  // namespace tasks
 }  // namespace sawback_manipulation

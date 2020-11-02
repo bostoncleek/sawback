@@ -10,17 +10,12 @@
 #include <pcl_ros/transforms.h>
 #include <rosparam_shortcuts/rosparam_shortcuts.h>
 
-#include <sawback_manipulation/grasp_detection.hpp>
-#include <sawback_manipulation/perception/cloud_processing.hpp>
+#include <sawback_manipulation/cloud_processing.hpp>
+#include <grasp_detection.hpp>
 
 namespace sawback_manipulation
 {
 constexpr char LOGNAME[] = "Grasp Detection";
-
-using perception::passThroughFilter;
-using perception::PointCloudRGB;
-using perception::PointCloudRGBA;
-using perception::removeGround;
 
 GraspDetection::GraspDetection(const ros::NodeHandle& nh) : nh_(nh)
 {

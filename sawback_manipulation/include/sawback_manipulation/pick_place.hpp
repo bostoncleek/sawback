@@ -14,13 +14,11 @@
 #include <moveit_visual_tools/moveit_visual_tools.h>
 #include <geometry_msgs/PoseStamped.h>
 
-#include <sawback_manipulation/solvers/cartesian_path.hpp>
+#include <sawback_manipulation/cartesian_path.hpp>
 
 // #include <Eigen/Core>
 
 namespace sawback_manipulation
-{
-namespace tasks
 {
 MOVEIT_CLASS_FORWARD(PickPlace)
 
@@ -74,7 +72,7 @@ private:
 
   std::vector<std::pair<robot_trajectory::RobotTrajectoryPtr, std::string>> trajectories_;
 
-  sawback_manipulation::solvers::CartesianPathUniquePtr cartesian_path_ptr_;
+  sawback_manipulation::CartesianPathUniquePtr cartesian_path_ptr_;
   std::unique_ptr<moveit_visual_tools::MoveItVisualTools> visual_tools_ptr_;
 
   double pre_distance_pick_;     // offset distance to pick pose
@@ -87,5 +85,4 @@ private:
 
   Eigen::Isometry3d text_pose_;  // for rviz tools
 };
-}  // namespace tasks
 }  // namespace sawback_manipulation

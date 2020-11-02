@@ -20,8 +20,6 @@
 
 namespace sawback_manipulation
 {
-namespace solvers
-{
 MOVEIT_CLASS_FORWARD(CartesianPath)
 
 /** @brief Compose cartesian path */
@@ -72,5 +70,4 @@ private:
   double max_acceleration_scaling_factor_;  // joint acceleration scaling factor [0,1]
 };
 
-}  // namespace solvers
 }  // namespace sawback_manipulation

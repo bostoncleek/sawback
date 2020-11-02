@@ -13,11 +13,9 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/passthrough.h>
 
-#include <sawback_manipulation/perception/cloud_processing.hpp>
+#include <sawback_manipulation/cloud_processing.hpp>
 
 namespace sawback_manipulation
-{
-namespace perception
 {
 constexpr char LOGNAME[] = "Cloud Processing";
 
@@ -81,6 +79,4 @@ void passThroughFilter(const std::vector<double>& xyz_lower, const std::vector<d
   pass.setFilterLimits(xyz_lower.at(2), xyz_upper.at(2));
   pass.filter(*cloud.get());
 }
-
-}  // namespace perception
 }  // namespace sawback_manipulation

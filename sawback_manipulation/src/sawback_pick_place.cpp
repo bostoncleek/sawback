@@ -9,8 +9,8 @@
 #include <eigen_conversions/eigen_msg.h>
 #include <rosparam_shortcuts/rosparam_shortcuts.h>
 
-#include <sawback_manipulation/sawback_pick_place.hpp>
 #include <sawback_msgs/SampleGrasps.h>
+#include <sawback_pick_place.hpp>
 
 namespace sawback_manipulation
 {
@@ -50,7 +50,7 @@ void SawbackPickPlace::init()
   planning_component_ptr_.reset(new moveit::planning_interface::PlanningComponent(arm_planning_group_, moveit_cpp_ptr_));
 
   // Pick and Place task
-  task_.reset(new tasks::PickPlace(moveit_cpp_ptr_, arm_planning_group_, gripper_planning_group_, eef_link_));
+  task_.reset(new PickPlace(moveit_cpp_ptr_, arm_planning_group_, gripper_planning_group_, eef_link_));
 
   // action server
   server_.reset(new actionlib::SimpleActionServer<sawback_msgs::PickPlaceAction>(nh_, action_name_, false));

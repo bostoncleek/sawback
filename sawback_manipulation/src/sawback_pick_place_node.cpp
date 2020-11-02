@@ -5,7 +5,7 @@
  * @brief Sawback pick and place pipline using moveitcpp
  */
 
-#include <sawback_manipulation/sawback_pick_place.hpp>
+#include <sawback_pick_place.hpp>
 
 // moveit_msgs::CollisionObject createObject()
 // {
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
   }
 
   // Begin manipulation tasks
-  // auto task = std::make_unique<sawback_manipulation::tasks::PickPlace>(moveit_cpp_ptr, "right_arm", "hand",
+  // auto task = std::make_unique<sawback_manipulation::PickPlace>(moveit_cpp_ptr, "right_arm", "hand",
   //                                                                      "right_gripper_tip");
   //
   // // Call grasping pipeline

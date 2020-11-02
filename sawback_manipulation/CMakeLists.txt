@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.9)
 project(sawback_manipulation)
 
 # add compile options
@@ -49,11 +49,9 @@ endif()
 
 catkin_package(
  INCLUDE_DIRS include
- LIBRARIES
- 	${PROJECT_NAME}_perception
-	${PROJECT_NAME}_solvers
-	${PROJECT_NAME}_tasks
+ LIBRARIES ${PROJECT_NAME}
  CATKIN_DEPENDS
+  actionlib
  	geometry_msgs
 	moveit_core
 	moveit_ros_planning_interface
@@ -82,76 +80,42 @@ include
   ${catkin_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME}_perception
-	src/${PROJECT_NAME}/perception/cloud_processing.cpp
+add_library(${PROJECT_NAME}
+	src/${PROJECT_NAME}/cartesian_path.cpp
+	src/${PROJECT_NAME}/cloud_processing.cpp
+	src/${PROJECT_NAME}/pick_place.cpp
 )
 
-add_library(${PROJECT_NAME}_solvers
-	src/${PROJECT_NAME}/solvers/cartesian_path.cpp
-)
-
-add_library(${PROJECT_NAME}_tasks
-	src/${PROJECT_NAME}/tasks/pick_place.cpp
-)
-
-# add_dependencies(${PROJECT_NAME}
-# 	${${PROJECT_NAME}_EXPORTED_TARGETS}
-# 	${catkin_EXPORTED_TARGETS}
-# )
-
-target_link_libraries(${PROJECT_NAME}_perception
+target_link_libraries(${PROJECT_NAME}
 	${catkin_LIBRARIES}
+	${Boost_LIBRARIES}
 	${Eigen3_LIBRARIES}
 	${PCL_LIBRARIES}
 )
 
-target_link_libraries(${PROJECT_NAME}_tasks
-	${catkin_LIBRARIES}
-	${Eigen3_LIBRARIES}
-	${PROJECT_NAME}_solvers
-)
-
-target_link_libraries(${PROJECT_NAME}_solvers
-	${catkin_LIBRARIES}
-	${Boost_LIBRARIES}
-	${Eigen3_LIBRARIES}
-)
-
 
 add_executable(grasp_detection
+	src/grasp_detection.cpp
 	src/grasp_detection_node.cpp
-	src/${PROJECT_NAME}/grasp_detection.cpp
 )
 
 add_executable(sawback_pick_place
+	src/sawback_pick_place.cpp
 	src/sawback_pick_place_node.cpp
-	src/${PROJECT_NAME}/sawback_pick_place.cpp
 )
-
-# add_dependencies(grasp_detection
-# 	${${PROJECT_NAME}_EXPORTED_TARGETS}
-# 	${catkin_EXPORTED_TARGETS}
-#
-# )
-#
-# add_dependencies(sawback_demo
-# 	${${PROJECT_NAME}_EXPORTED_TARGETS}
-# 	${catkin_EXPORTED_TARGETS}
-# )
 
 target_link_libraries(grasp_detection
 	${catkin_LIBRARIES}
 	${Eigen3_LIBRARIES}
 	${GPD_LIBRARIES}
 	${PCL_LIBRARIES}
-	${PROJECT_NAME}_perception
+	${PROJECT_NAME}
 )
 
 target_link_libraries(sawback_pick_place
 	${catkin_LIBRARIES}
 	${Eigen3_LIBRARIES}
-	${PROJECT_NAME}_solvers
-	${PROJECT_NAME}_tasks
+	${PROJECT_NAME}
 )
 
 # Mark executables for installation
@@ -159,10 +123,7 @@ install(TARGETS grasp_detection sawback_pick_place
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(TARGETS
- 		${PROJECT_NAME}_perception
-		${PROJECT_NAME}_solvers
-		${PROJECT_NAME}_tasks
+install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}

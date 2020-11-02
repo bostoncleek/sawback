@@ -5,7 +5,7 @@
  * @brief Grasp detection node using point clouds
  */
 
-#include <sawback_manipulation/grasp_detection.hpp>
+#include <grasp_detection.hpp>
 
 int main(int argc, char** argv)
 {

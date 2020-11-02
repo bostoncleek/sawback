@@ -12,7 +12,7 @@
 #include <ros/ros.h>
 #include <actionlib/server/simple_action_server.h>
 
-#include <sawback_manipulation/tasks/pick_place.hpp>
+#include <sawback_manipulation/pick_place.hpp>
 #include <sawback_msgs/PickPlaceAction.h>
 
 namespace sawback_manipulation
@@ -37,7 +37,7 @@ private:
   moveit::planning_interface::MoveItCppPtr moveit_cpp_ptr_;                  // moveitcpp pointer
   moveit::planning_interface::PlanningComponentPtr planning_component_ptr_;  // planning only for right arm
 
-  std::unique_ptr<tasks::PickPlace> task_;                                                // pick and place task
+  std::unique_ptr<PickPlace> task_;                                                // pick and place task
   std::unique_ptr<actionlib::SimpleActionServer<sawback_msgs::PickPlaceAction>> server_;  // pick and place action server
 
   std::string arm_planning_group_;      // planning group arm name

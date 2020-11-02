@@ -12,11 +12,9 @@
 #include <ros/console.h>
 #include <moveit/robot_state/cartesian_interpolator.h>
 #include <moveit/trajectory_processing/iterative_time_parameterization.h>
-#include <sawback_manipulation/solvers/cartesian_path.hpp>
+#include <sawback_manipulation/cartesian_path.hpp>
 
 namespace sawback_manipulation
-{
-namespace solvers
 {
 constexpr char LOGNAME[] = "Cartesian Path";
 
@@ -116,6 +114,4 @@ bool CartesianPath::isStateValid(const planning_scene::PlanningScene* planning_s
 
   return true;
 }
-
-}  // namespace solvers
 }  // namespace sawback_manipulation

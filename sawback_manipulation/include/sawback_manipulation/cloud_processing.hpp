@@ -14,8 +14,6 @@
 
 namespace sawback_manipulation
 {
-namespace perception
-{
 typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudRGBA;
 typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloudRGB;
 
@@ -34,5 +32,4 @@ void removeGround(PointCloudRGB::Ptr& cloud);
 void passThroughFilter(const std::vector<double>& xyz_lower, const std::vector<double>& xyz_upper,
                        PointCloudRGB::Ptr& cloud);
 
-}  // namespace perception
 }  // namespace sawback_manipulation
