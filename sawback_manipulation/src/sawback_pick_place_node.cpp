@@ -115,10 +115,10 @@ int main(int argc, char** argv)
   // Eigen::Isometry3d grasp = Eigen::Translation3d(0.8, 0.1, -0.15) * quat;
 
   task->initPick(0.15, 0.15, grasp);
-  task->planPick();
+  task->pick();
 
   task->initPlace(0.15, 0.15, grasp);
-  task->planPlace();
+  task->place();
 
   // const Eigen::Quaterniond quat(-0.0336479, 0.677444, -0.0578169, 0.732526);
   // const Eigen::Isometry3d grasp = Eigen::Translation3d(0.747486, 0.101057, 0.724942) * quat;
