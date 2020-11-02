@@ -53,16 +53,16 @@ public:
   void initPlace(double pre_distance, double post_distance, const Eigen::Isometry3d& pose);
 
   /**
-   * @brief plans and executed the pick task
+   * @brief Plans and executed the pick task
    * @return true if planning and execution are successful
    */
-  bool planPick();
+  bool pick();
 
   /**
-   * @brief plans and executed the pick task
+   * @brief Plans and executed the pick task
    * @return true if planning and execution are successful
    */
-  bool planPlace();
+  bool place();
 
   /**
    * @brief Displays frames in base_link frame

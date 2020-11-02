@@ -69,7 +69,7 @@ void PickPlace::initPlace(double pre_distance, double post_distance, const Eigen
   place_pose_ = pose;
 }
 
-bool PickPlace::planPick()
+bool PickPlace::pick()
 {
   visual_tools_ptr_->deleteAllMarkers();
 
@@ -207,7 +207,7 @@ bool PickPlace::planPick()
   return true;
 }
 
-bool PickPlace::planPlace()
+bool PickPlace::place()
 {
   visual_tools_ptr_->deleteAllMarkers();
 
