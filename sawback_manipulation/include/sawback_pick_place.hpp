@@ -17,24 +17,52 @@
 
 namespace sawback_manipulation
 {
+/** @brief Action server interface with pick and place pipeline */
 class SawbackPickPlace
 {
 public:
+  /**
+  * @brief Constructor
+  * @param nh - node handle
+  */
   SawbackPickPlace(const ros::NodeHandle& nh);
 
 private:
+  /** @brief Load parameters */
   void loadParameters();
 
+  /** @brief Initialize node */
   void init();
 
+  /**
+  * @brief Action server goal call back
+  */
   void goalCallback();
 
+  /**
+  * @brief Preempts goal
+  */
   void preemptCallback();
 
+  /**
+  * @brief Calls GPD and the pick pipeline
+  * @param pre_distance - approach distance from grasp
+  * @param post_distance - retreat distance from grasp
+  */
   void pickAction(double pre_distance, double post_distance);
 
+  /**
+  * @brief Calls the place pipeline
+  * @param place_pose - place pose
+  * @param pre_distance - approach distance from grasp
+  * @param post_distance - retreat distance from grasp
+  */
   void placeAction(const geometry_msgs::PoseStamped& place_pose, double pre_distance, double post_distance);
 
+  /**
+  * @brief Moves arm to ready position
+  * @return true if in ready position
+  */
   bool readyPose();
 
 private:

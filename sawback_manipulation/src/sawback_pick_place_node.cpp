@@ -3,6 +3,18 @@
  * @author Boston Cleek
  * @date 25 Sep 2020
  * @brief Sawback pick and place pipline using moveitcpp
+
+   PARAMETERS:
+     arm_planning_group - arm planning group name
+     gripper_planning_group - gripper planning group name
+     eef_link - end effector name
+     action_name - action name
+     x_offset - grasp x-axis offset
+     y_offset - grasp y-axis offset
+     z_offset - grasp z-axis offset
+
+   SERVICES:
+     get_grasp (sawback_msgs/PickPlace) - pick and place action 
  */
 
 #include <sawback_pick_place.hpp>
