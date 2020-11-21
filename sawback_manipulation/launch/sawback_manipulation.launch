@@ -1,14 +1,17 @@
 <launch>
   <arg name="fake_execution" default="false"/>
+  <arg name="use_rviz" default="false"/>
+
 
   <node pkg="sawback_manipulation" type="sawback_pick_place" name="sawback_moveitcpp" output="screen">
     <param name="arm_planning_group"          value="right_arm"/>
     <param name="gripper_planning_group"      value="hand"/>
     <param name="eef_link"                    value="right_gripper_tip"/>
+    <!-- <param name="eef_link"                    value="right_hand"/> -->
     <param name="action_name"                 value="pick_place"/>
     <param name="x_offset"                    value="0.0"/>
     <param name="y_offset"                    value="0.0"/>
-    <param name="z_offset"                    value="0.0"/>
+    <param name="z_offset"                    value="-0.0"/>
   </node>
 
   <include unless="$(arg fake_execution)" file="$(find sawback_manipulation)/launch/grasping.launch"/>
@@ -29,7 +32,7 @@
     <arg name="fake_execution" value="$(arg fake_execution)"/>
   </include>
 
-  <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"
+  <node if="$(arg use_rviz)" name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"
           args="-d $(find sawback_manipulation)/config/sawback_demo.rviz" output="screen">
     <rosparam command="load" file="$(find sawback_moveit_config)/config/kinematics.yaml"/>
   </node>
