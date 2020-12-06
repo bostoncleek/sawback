@@ -2,7 +2,6 @@
   <arg name="fake_execution" default="false"/>
   <arg name="use_rviz" default="false"/>
 
-
   <node pkg="sawback_manipulation" type="sawback_pick_place" name="sawback_moveitcpp" output="screen">
     <param name="arm_planning_group"          value="right_arm"/>
     <param name="gripper_planning_group"      value="hand"/>
