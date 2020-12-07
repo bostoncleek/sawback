@@ -1,4 +1,10 @@
 # sawback
+<p align="center">
+  <img src="/sawback_manipulation/media/ridgeback_pick.gif" width="350" height="300"/>
+  <img src="/sawback_manipulation/media/pick_rviz.gif" width="350" height="300"/>
+</p>
+
+# Table of Contents
 - [Overview](#Overview) </br>
 - [Packages](#Packages) </br>
 - [Getting Started](#Getting-Started) </br>
@@ -47,8 +53,3 @@ If you have completed the Getting Started section of the [nuridgeback_robot](htt
 
 # Manipulation and Grasping Demo
 To launch the manipulation pipeline see [sawback_manipulation](https://github.com/bostoncleek/sawback/tree/master/sawback_manipulation). To see the full mobile manipulation sequence see this [video](https://youtu.be/iLyqu9EoNtY).
-
-<p align="center">
-  <img src="/sawback_manipulation/media/ridgeback_pick.gif" width="300" height="300"/>
-  <img src="/sawback_manipulation/media/pick_rviz.gif" width="300" height="300"/>
-</p>
