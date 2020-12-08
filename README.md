@@ -1,7 +1,6 @@
 # sawback
 <p align="center">
-  <img src="/sawback_manipulation/media/ridgeback_pick.gif" width="350" height="300"/>
-  <img src="/sawback_manipulation/media/pick_rviz.gif" width="350" height="300"/>
+  <img src="/sawback_manipulation/media/nurb1.jpg" width="400" height="400"/>
 </p>
 
 # Table of Contents
@@ -13,10 +12,6 @@
 # Overview
 A supplementary repository to [nu_ridgeback](https://github.com/bostoncleek/nu_ridgeback). This repository contains the tools
 for manipulation using the Sawyer on board the Ridgeback.
-
-<p align="center">
-  <img src="/sawback_manipulation/media/nurb1.jpg" width="400" height="400"/>
-</p>
 
 # Packages
 - [sawback_description](https://github.com/bostoncleek/sawback/tree/master/sawback_description): Sawback URDF
@@ -53,3 +48,8 @@ If you have completed the Getting Started section of the [nuridgeback_robot](htt
 
 # Manipulation and Grasping Demo
 To launch the manipulation pipeline see [sawback_manipulation](https://github.com/bostoncleek/sawback/tree/master/sawback_manipulation). To see the full mobile manipulation sequence see this [video](https://youtu.be/iLyqu9EoNtY).
+
+<p align="center">
+  <img src="/sawback_manipulation/media/ridgeback_pick.gif" width="350" height="300"/>
+  <img src="/sawback_manipulation/media/pick_rviz.gif" width="350" height="300"/>
+</p>
